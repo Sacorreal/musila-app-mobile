@@ -1,8 +1,3 @@
-/**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
- */
-
 import '@/global.css';
 
 import { Platform } from 'react-native';
@@ -63,3 +58,25 @@ export const Spacing = {
 
 export const BottomTabInset = Platform.select({ ios: 50, android: 80 }) ?? 0;
 export const MaxContentWidth = 800;
+
+export const FontFamily = {
+  regular: 'Inter_400Regular',
+  medium: 'Inter_500Medium',
+  semibold: 'Inter_600SemiBold',
+  bold: 'Inter_700Bold',
+} as const;
+
+export const Typography = {
+  display: { fontSize: 32, fontWeight: '700' as const, lineHeight: 38 },
+  heading: { fontSize: 24, fontWeight: '600' as const, lineHeight: 30 },
+  title: { fontSize: 20, fontWeight: '600' as const, lineHeight: 26 },
+  body: { fontSize: 16, fontWeight: '400' as const, lineHeight: 24 },
+  label: { fontSize: 14, fontWeight: '500' as const, lineHeight: 20 },
+  caption: { fontSize: 12, fontWeight: '400' as const, lineHeight: 16 },
+} as const;
+
+export const Brand = {
+  primary: '#208AEF',
+  primaryDark: '#0274DF',
+  accent: '#3C9FFE',
+} as const;
