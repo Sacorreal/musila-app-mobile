@@ -9,15 +9,19 @@ import { tabsByRoles } from "@/shared/constants/routes";
 export default function TabLayout() {
   const role = useAuthStore((s) => s.user?.role ?? UserRole.INVITADO);
 
-  const allowedTabs = useMemo(
-    () => tabsByRoles.filter((tab) => tab.rolAccess.includes(role)),
+  const allowedTabNames = useMemo(
+    () => new Set(tabsByRoles.filter((t) => t.rolAccess.includes(role)).map((t) => t.name)),
     [role]
   );
 
   return (
     <NativeTabs labelVisibilityMode="labeled">
-      {allowedTabs.map((tab) => (
-        <NativeTabs.Trigger key={tab.title} name={tab.name}>
+      {tabsByRoles.map((tab) => (
+        <NativeTabs.Trigger
+          key={tab.name}
+          name={tab.name}
+          hidden={!allowedTabNames.has(tab.name)}
+        >
           <NativeTabs.Trigger.Label>{tab.title}</NativeTabs.Trigger.Label>
           <NativeTabs.Trigger.Icon
             src={

@@ -13,7 +13,7 @@ export const tabsByRoles: MenuRoute[] = [
   {
     title: "Buscar",
     icon: "cloud-search",
-    name: "search/index",
+    name: "search",
     rolAccess: [UserRole.CANTAUTOR, UserRole.INTERPRETE, UserRole.INVITADO],
   },
   {
@@ -25,26 +25,25 @@ export const tabsByRoles: MenuRoute[] = [
   {
     title: "Solicitudes",
     icon: "format-list-checks",
-    name: "request/index",
-    rolAccess: [UserRole.AUTOR, UserRole.EDITOR],
+    name: "request",
+    rolAccess: [UserRole.AUTOR, UserRole.EDITOR, UserRole.CANTAUTOR],
   },
   {
     title: "Publicar",
     icon: "music-note-plus",
-    name: "publish/index",
+    name: "publish",
     rolAccess: [UserRole.AUTOR, UserRole.CANTAUTOR],
   },
   {
     title: "Chat",
     icon: "chat-processing",
-    name: "chat/index",
+    name: "chat",
     rolAccess: ALL_ROLES,
   },
-
   {
     title: "Más",
     icon: "plus-box",
-    name: "more/index",
+    name: "more",
     rolAccess: [UserRole.AUTOR, UserRole.CANTAUTOR],
   },
 ];
