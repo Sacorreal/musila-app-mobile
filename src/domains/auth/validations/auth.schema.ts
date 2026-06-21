@@ -1,10 +1,10 @@
 import { z } from 'zod';
 
 export const loginSchema = z.object({
-  email: z
+  citizenID: z
     .string()
-    .min(1, 'El correo es requerido')
-    .email('Correo inválido'),
+    .min(1, 'El ID de ciudadano es requerido'),
+    
   password: z
     .string()
     .min(1, 'La contraseña es requerida')
@@ -12,10 +12,10 @@ export const loginSchema = z.object({
 });
 
 export const forgotPasswordSchema = z.object({
-  email: z
+  citizenID: z
     .string()
-    .min(1, 'El correo es requerido')
-    .email('Correo inválido'),
+    .min(1, 'El ID de ciudadano es requerido')
+    
 });
 
 export type LoginSchema = z.infer<typeof loginSchema>;

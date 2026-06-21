@@ -25,6 +25,7 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
+      "@react-native-vector-icons/ant-design",
       "expo-router",
       [
         "expo-splash-screen",
@@ -37,7 +38,8 @@
         }
       ],
       "expo-secure-store",
-      "expo-audio"
+      "expo-audio",
+      "expo-status-bar"
     ],
     "experiments": {
       "typedRoutes": true,

@@ -1,16 +1,12 @@
-import { api } from '@/shared/libs/api';
-import type { LoginPayload, LoginResponse } from '@/domains/auth/types/auth.types';
+import { api } from "@/shared/libs/api";
+import type { AuthResponse, LoginPayload } from "../types/auth.types";
 
-export const authService = {
-  login: (payload: LoginPayload) =>
-    api.post<LoginResponse>('/auth/login', payload).then((r) => r.data),
+export const loginAction = async (dto: LoginPayload): Promise<string> => {
+  const { data } = await api.post<AuthResponse>("/auth", dto);
+  return data.access_token;
+};
 
-  logout: () =>
-    api.post('/auth/logout').then((r) => r.data),
-
-  me: () =>
-    api.get<LoginResponse['user']>('/auth/me').then((r) => r.data),
-
-  forgotPassword: (email: string) =>
-    api.post('/auth/forgot-password', { email }).then((r) => r.data),
+export const refreshTokenAction = async (): Promise<string> => {
+  const { data } = await api.post<AuthResponse>("/auth/refresh");
+  return data.access_token;
 };

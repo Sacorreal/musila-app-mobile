@@ -1,22 +1,39 @@
-export interface User {
-  id: string;
-  email: string;
-  name: string;
-  avatar?: string;
-  role: 'composer' | 'performer';
-  createdAt: string;
-}
+import { UserRole } from "@/domains/users/types/users.types";
 
-export interface AuthTokens {
-  accessToken: string;
-}
+
+export type AuthUser = {
+  id: string
+    email: string
+    role: UserRole
+    name: string
+    plan?: 'free' | 'pro'
+    secondName?: string
+    lastName?: string
+    secondLastName?: string
+    avatarUrl?: string
+    biography?: string
+    phone?: string
+    countryCode?: string
+    typeCitizenID?: string
+    citizenID?: string
+};
+
 
 export interface LoginPayload {
-  email: string;
+  citizenID: string;
   password: string;
 }
 
-export interface LoginResponse {
-  user: User;
-  accessToken: string;
-}
+export type AuthResponse = {
+  access_token: string;
+};
+
+export type TokenPayload = {
+  id: string;
+    email: string;
+    role: UserRole;
+    iat: number;
+    exp: number;
+    name: string;
+    plan?: 'free' | 'pro';
+};
