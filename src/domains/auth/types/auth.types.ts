@@ -25,7 +25,8 @@ export interface LoginPayload {
 }
 
 export type AuthResponse = {
-  access_token: string;
+  token: string;
+  user: AuthUser;
 };
 
 export type TokenPayload = {

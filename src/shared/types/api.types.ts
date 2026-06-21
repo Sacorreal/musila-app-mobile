@@ -1,7 +1,8 @@
+import type { ComponentProps } from "react";
+import type { MaterialCommunityIcons } from "@expo/vector-icons";
 import { UserRole } from "@/domains/users/types/users.types";
-import { IconProps } from "react-native-vector-icons/Icon";
 
-export type IconName = IconProps["name"];
+export type IconName = ComponentProps<typeof MaterialCommunityIcons>["name"];
 
 export interface ApiResponse<T> {
   data: T;

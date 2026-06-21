@@ -9,16 +9,17 @@ export const apiURLs = {
   },
   users: {
     base: '/users' as const,
-    roles: '/users/roles' as const,    
+    roles: '/users/roles' as const,
     authors: '/users/authors' as const,
     userById: (id: string) => `/users/${id}` as const,
     me: '/users/me' as const,
-    deleteMe: (id: string) => `/users/me/${id}` as const,
+    deleteMe: '/users/me' as const,
   },
   tracks: {
-    base: '/tracks' as const, // Used for POST and GET (all)
+    base: '/tracks' as const,
     myTracks: '/tracks/my-tracks' as const,
-    byId: (id: string) => `/tracks/${id}` as const, // Used for GET, PUT, DELETE
+    me: '/tracks/me' as const,
+    byId: (id: string) => `/tracks/${id}` as const,
   },
   storage: {   
     presignedUrls: '/storage/upload-url' as const,
@@ -27,13 +28,12 @@ export const apiURLs = {
   search: {
     base:'/search' as const,
   },
-  genres: {
-    base: '/musical-genre' as const,
-    byId: (id: string) => `/musical-genre/${id}` as const,
-  },
   playlists: {
-    base: '/playlists' as const, // Used for POST and GET (all)
-    byId: (id: string) => `/playlists/${id}` as const, // Used for GET, PUT, DELETE
+    base: '/playlists' as const,
+    byId: (id: string) => `/playlists/${id}` as const,
+    collaborators: (playlistId: string) => `/playlists/${playlistId}/collaborators` as const,
+    collaboratorsBulk: (playlistId: string) => `/playlists/${playlistId}/collaborators/bulk` as const,
+    collaboratorById: (playlistId: string, guestId: string) => `/playlists/${playlistId}/collaborators/${guestId}` as const,
   },
   requestedTracks: {
     base: '/requested-tracks' as const, // POST, GET
@@ -52,12 +52,24 @@ export const apiURLs = {
     base: '/languages' as const,
   },
   guests: {
-    base: '/guests' as const, // POST, GET
-    byId: (id: string) => `/guests/${id}` as const, // GET, PUT, DELETE
+    base: '/guests' as const,
+    byId: (id: string) => `/guests/${id}` as const,
+    registerFromInvite: '/guests/register-from-invite' as const,
   },
   invites: {
     base: '/invites' as const,
     byToken: (token: string) => `/invites/${token}` as const,
+  },
+  chats: {
+    guests: (chatId: string) => `/chats/${chatId}/guests` as const,
+    messages: (chatId: string) => `/chats/${chatId}/messages` as const,
+    read: (chatId: string) => `/chats/${chatId}/read` as const,
+  },
+  notifications: {
+    base: '/notifications' as const,
+    unreadCount: '/notifications/unread-count' as const,
+    readAll: '/notifications/read-all' as const,
+    readById: (id: string) => `/notifications/${id}/read` as const,
   },
   app: {
     health: `${BASE_URL}` as const,
@@ -74,11 +86,9 @@ export const apiURLs = {
     paymentSourceMe: `${BASE_URL}/payments/payment-sources/me` as const,
     paymentSourceById: (id: string) => `${BASE_URL}/payments/payment-sources/${id}` as const,
     status: (reference: string) => `${BASE_URL}/payments/status/${reference}` as const,
-    history: `${BASE_URL}/payments/history` as const,
     byId: (id: string) => `${BASE_URL}/payments/${id}` as const,
     receipt: (id: string) => `${BASE_URL}/payments/${id}/receipt` as const,
-    pseBanks: `${BASE_URL}/payments/pse/banks` as const,
-    psePay: `${BASE_URL}/payments/pse` as const,
+    wompiWebhook: `${BASE_URL}/payments/wompi/webhook` as const,
   },
   me: {
     profile: `${BASE_URL}/users/me` as const,

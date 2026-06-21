@@ -1,6 +1,6 @@
 import { NativeTabs } from "expo-router/unstable-native-tabs";
 import { useMemo } from "react";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 import { useAuthStore } from "@/domains/auth/store/useAuthStore";
 import { UserRole } from "@/domains/users/types/users.types";

@@ -1,11 +1,11 @@
 import { Redirect } from 'expo-router';
 
-import { useAuthStore } from '@/shared/stores/auth.store';
+import { useAuthStore } from '@/domains/auth/store/useAuthStore';
 
 export default function RootIndex() {
-  const { isAuthenticated, isHydrated } = useAuthStore();
+  const { user, isLoading } = useAuthStore();
 
-  if (!isHydrated) return null;
+  if (isLoading) return null;
 
-  return <Redirect href={isAuthenticated ? '/(app)/home' : '/(auth)/login'} />;
+  return <Redirect href={(user ? '/(tabs)' : '/(auth)/login') as any} />;
 }
