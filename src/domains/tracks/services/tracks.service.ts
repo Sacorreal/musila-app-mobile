@@ -1,5 +1,5 @@
-import { api } from '@/shared/libs/api';
 import { apiURLs } from '@/shared/constants/urls';
+import { api } from '@/shared/libs/api';
 import type {
   CreateTrackInput,
   LanguageDto,
@@ -39,4 +39,18 @@ export const tracksService = {
     const { data } = await api.get<LanguageDto[]>(apiURLs.languages.base);
     return Array.isArray(data) ? data : [];
   },
+
+  // ✅ Actualizar canción
+  async update(id: string, data: Partial<CreateTrackInput>): Promise<TracksResponseDto> {
+    try {
+      const response = await api.put<TracksResponseDto>(
+        apiURLs.tracks.byId(id),
+        data
+      );
+      return response.data;
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
+
 };

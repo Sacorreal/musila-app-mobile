@@ -20,7 +20,7 @@ export const tabsByRoles: MenuRoute[] = [
     title: "Mi Música",
     icon: "playlist-music",
     name: "my-music",
-    rolAccess: ALL_ROLES,
+    rolAccess: [UserRole.CANTAUTOR, UserRole.INTERPRETE, UserRole.INVITADO],
   },
   {
     title: "Solicitudes",

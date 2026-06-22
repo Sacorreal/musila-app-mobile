@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { tracksService } from '../services/tracks.service';
-import type { CreateTrackInput } from '../types/tracks.types';
+import type { CreateTrackInput, UpdateTrackInput } from '../types/tracks.types';
 
 export function useMyAuthorTracks() {
   return useQuery({
@@ -45,5 +45,35 @@ export function useLanguages() {
   return useQuery({
     queryKey: ['languages'],
     queryFn: () => tracksService.getLanguages(),
+  });
+}
+
+export function useUpdateTrack() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: UpdateTrackInput;
+    }) => tracksService.update(id, data),
+
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ['tracks'],
+        }),
+
+        queryClient.invalidateQueries({
+          queryKey: ['tracks', 'my-tracks'],
+        }),
+
+        queryClient.invalidateQueries({
+          queryKey: ['tracks', 'me'],
+        }),
+      ]);
+    },
   });
 }

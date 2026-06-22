@@ -98,3 +98,6 @@ export interface PaginatedTracksResponse {
     hasNextPage: boolean;
   };
 }
+
+
+export type UpdateTrackInput = Partial<CreateTrackInput>
