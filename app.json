@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "musila-app-mobile",
-    "slug": "musila",
+    "name": "Musila",
+    "slug": "Musila",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -60,6 +60,14 @@
         {
           "supportsOpeningDocumentsInPlace": true,
           "enableFileSharing": true
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/android-icon-monochrome.png",
+          "color": "#208AEF",
+          "sounds": []
         }
       ],
       "expo-status-bar",
