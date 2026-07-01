@@ -55,13 +55,15 @@
           "cameraPermission": "Musila necesita acceso a tu cámara para tomar una foto de portada."
         }
       ],
-      ["expo-file-system",
+      [
+        "expo-file-system",
         {
           "supportsOpeningDocumentsInPlace": true,
           "enableFileSharing": true
         }
       ],
-      "expo-status-bar"
+      "expo-status-bar",
+      "expo-sharing"
     ],
     "experiments": {
       "typedRoutes": true,
