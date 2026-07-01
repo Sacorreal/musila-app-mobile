@@ -1,5 +1,7 @@
+import { useCallback } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import ReAnimated, { FadeInDown } from 'react-native-reanimated';
+import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Brand, Typography } from '@/constants/theme';
 import { useAuthStore } from '@/domains/auth/store/useAuthStore';
@@ -8,14 +10,23 @@ import { MyTracksList } from '@/domains/tracks/components/MyTracksList';
 import { FeaturedTracksList } from '@/domains/tracks/components/FeaturedTracksList';
 import { GenreRow } from '@/domains/musical-genre/components/GenreRow';
 import { ArtistsRow } from '@/domains/artists/components/ArtistsRow';
+import type { TracksResponseDto } from '@/domains/tracks/types/tracks.types';
 
 export function HomeScreen() {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   const user = useAuthStore((s) => s.user);
   const role = user?.role;
 
   const isAuthor = role === UserRole.AUTOR;
   const isCantautor = role === UserRole.CANTAUTOR;
+
+  const handleTrackPress = useCallback(
+    (track: TracksResponseDto) => {
+      router.push({ pathname: '/tracks/[id]', params: { id: track.id } });
+    },
+    [router],
+  );
 
   return (
     <ScrollView
@@ -35,7 +46,7 @@ export function HomeScreen() {
 
       {(isAuthor || isCantautor) && (
         <ReAnimated.View entering={FadeInDown.delay(120).springify()}>
-          <MyTracksList />
+          <MyTracksList onTrackPress={handleTrackPress} />
         </ReAnimated.View>
       )}
 
@@ -53,7 +64,7 @@ export function HomeScreen() {
 
       {!isAuthor && (
         <ReAnimated.View entering={FadeInDown.delay(isCantautor ? 480 : 360).springify()} style={styles.section}>
-          <FeaturedTracksList />
+          <FeaturedTracksList onTrackPress={handleTrackPress} />
         </ReAnimated.View>
       )}
     </ScrollView>

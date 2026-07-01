@@ -36,3 +36,14 @@ export function useDeletePlaylist() {
     },
   });
 }
+
+export function useAddTrackToPlaylist() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ playlistId, trackId }: { playlistId: string; trackId: string }) =>
+      playlistsService.addTrack(playlistId, trackId),
+    onSuccess: (_, vars) => {
+      qc.invalidateQueries({ queryKey: ['playlists', vars.playlistId] });
+    },
+  });
+}
