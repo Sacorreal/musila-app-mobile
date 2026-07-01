@@ -1,0 +1,508 @@
+{
+  "version": "1.0.0",
+  "updatedAt": "2026-05-13",
+  "countries": {
+    "AF": {
+      "name": "Afganistán",
+      "flag": "AF",
+      "copyrightOffice": {
+        "name": "Oficina de Derecho de Autor Ministerio de la Información y de la Cultura"
+      }
+    },
+    "AL": {
+      "name": "Albania",
+      "flag": "AL",
+      "copyrightOffice": {
+        "name": "Copyright Directorate Ministry of Culture Republic of Albania"
+      }
+    },
+    "DE": {
+      "name": "Alemania",
+      "flag": "DE",
+      "copyrightOffice": {
+        "name": "German Patent and Trade Mark Office (DPMA)"
+      }
+    },
+    "AD": {
+      "name": "Andorra",
+      "flag": "AD",
+      "copyrightOffice": {
+        "name": "Trademarks Office of the Principality of Andorra"
+      }
+    },
+    "AO": {
+      "name": "Angola",
+      "flag": "AO",
+      "copyrightOffice": {
+        "name": "Servicio Nacional de Derechos de Autor y Derechos Conexos Ministerio de Cultura, Turismo y Medio Ambiente"
+      }
+    },
+    "AG": {
+      "name": "Antigua y Barbuda",
+      "flag": "AG",
+      "copyrightOffice": {
+        "name": "Antigua and Barbuda Intellectual Property & Commerce Office (ABIPCO)"
+      }
+    },
+    "SA": {
+      "name": "Arabia Saudita",
+      "flag": "SA",
+      "copyrightOffice": {
+        "name": "Saudi Authority for Intellectual Property (SAIP)"
+      }
+    },
+    "DZ": {
+      "name": "Argelia",
+      "flag": "DZ",
+      "copyrightOffice": {
+        "name": "National Office of Copyrights and Related Rights Ministry of Culture"
+      }
+    },
+    "AR": {
+      "name": "Argentina",
+      "flag": "AR",
+      "copyrightOffice": {
+        "name": "Dirección Nacional del Derecho de Autor"
+      }
+    },
+    "AM": {
+      "name": "Armenia",
+      "flag": "AM",
+      "copyrightOffice": {
+        "name": "Intellectual Property Office Ministry of Economy of the Republic of Armenia"
+      }
+    },
+    "AU": {
+      "name": "Australia",
+      "flag": "AU",
+      "copyrightOffice": {
+        "name": "Attorney-General's Department"
+      }
+    },
+    "AT": {
+      "name": "Austria",
+      "flag": "AT",
+      "copyrightOffice": {
+        "name": "Federal Ministry of Justice"
+      }
+    },
+    "AZ": {
+      "name": "Azerbaiyán",
+      "flag": "AZ",
+      "copyrightOffice": {
+        "name": "Intellectual Property Agency of the Republic of Azerbaijan"
+      }
+    },
+    "BS": {
+      "name": "Bahamas",
+      "flag": "BS",
+      "copyrightOffice": {
+        "name": "Departamento del Registrador General Sección de Propiedad Intelectual"
+      }
+    },
+    "BH": {
+      "name": "Bahrein",
+      "flag": "BH",
+      "copyrightOffice": {
+        "name": "Ministry of Information Affairs Directorate of Media Administration"
+      }
+    },
+    "BD": {
+      "name": "Bangladesh",
+      "flag": "BD",
+      "copyrightOffice": {
+        "name": "Copyright Office Bangladesh Ministry of Cultural Affairs"
+      }
+    },
+    "BB": {
+      "name": "Barbados",
+      "flag": "BB",
+      "copyrightOffice": {
+        "name": "Corporate Affairs and Intellectual Property Office"
+      }
+    },
+    "BY": {
+      "name": "Belarús",
+      "flag": "BY",
+      "copyrightOffice": {
+        "name": "National Center of Intellectual Property (NCIP)"
+      }
+    },
+    "BZ": {
+      "name": "Belice",
+      "flag": "BZ",
+      "copyrightOffice": {
+        "name": "Oficina de la Propiedad Intelectual de Belice"
+      }
+    },
+    "BJ": {
+      "name": "Benin",
+      "flag": "BJ",
+      "copyrightOffice": {
+        "name": "Beninese Copyright Office Ministry of Tourism, Culture and Arts"
+      }
+    },
+    "BO": {
+      "name": "Bolivia",
+      "flag": "BO",
+      "copyrightOffice": {
+        "name": "Servicio Nacional de Propiedad Intelectual"
+      }
+    },
+    "BR": {
+      "name": "Brasil",
+      "flag": "BR",
+      "copyrightOffice": {
+        "name": "Oficina de Derechos de Autor Ministerio de Cultura"
+      }
+    },
+    "BG": {
+      "name": "Bulgaria",
+      "flag": "BG",
+      "copyrightOffice": {
+        "name": "Copyright and Neighbouring Rights Directorate Ministry of Culture"
+      }
+    },
+    "CA": {
+      "name": "Canadá",
+      "flag": "CA",
+      "copyrightOffice": {
+        "name": "Oficina de Propiedad Intelectual de Canadá"
+      }
+    },
+    "CL": {
+      "name": "Chile",
+      "flag": "CL",
+      "copyrightOffice": {
+        "name": "Ministerio de las Culturas, las Artes y el Patrimonio Departamento de Derechos Intelectuales del Servicio Nacional del Patrimonio Cultural"
+      }
+    },
+    "CN": {
+      "name": "China",
+      "flag": "CN",
+      "copyrightOffice": {
+        "name": "National Copyright Administration of China (NCAC)"
+      }
+    },
+    "CO": {
+      "name": "Colombia",
+      "flag": "CO",
+      "copyrightOffice": {
+        "name": "Dirección Nacional de Derecho de Autor - DNDA"
+      }
+    },
+    "CR": {
+      "name": "Costa Rica",
+      "flag": "CR",
+      "copyrightOffice": {
+        "name": "Registro Nacional"
+      }
+    },
+    "CU": {
+      "name": "Cuba",
+      "flag": "CU",
+      "copyrightOffice": {
+        "name": "Centro Nacional de Derecho de Autor Ministerio de Cultura"
+      }
+    },
+    "EC": {
+      "name": "Ecuador",
+      "flag": "EC",
+      "copyrightOffice": {
+        "name": "Servicio Nacional de Derechos Intelectuales"
+      }
+    },
+    "EG": {
+      "name": "Egipto",
+      "flag": "EG",
+      "copyrightOffice": {
+        "name": "Oficina de Propiedad Intelectual de Egipto Consejo Supremo de Cultura"
+      }
+    },
+    "SV": {
+      "name": "El Salvador",
+      "flag": "SV",
+      "copyrightOffice": {
+        "name": "Centro Nacional de Registros"
+      }
+    },
+    "ES": {
+      "name": "España",
+      "flag": "ES",
+      "copyrightOffice": {
+        "name": "Oficina Española de Patentes y Marcas"
+      }
+    },
+    "US": {
+      "name": "Estados Unidos de América",
+      "flag": "US",
+      "copyrightOffice": {
+        "name": "United States Copyright Office"
+      }
+    },
+    "MX": {
+      "name": "México",
+      "flag": "MX",
+      "copyrightOffice": {
+        "name": "Instituto Nacional del Derecho de Autor (INDAUTOR)"
+      }
+    },
+    "PA": {
+      "name": "Panamá",
+      "flag": "PA",
+      "copyrightOffice": {
+        "name": "Dirección Nacional de Derecho de Autor y Derechos Conexos"
+      }
+    },
+    "PY": {
+      "name": "Paraguay",
+      "flag": "PY",
+      "copyrightOffice": {
+        "name": "Dirección Nacional de Propiedad Intelectual"
+      }
+    },
+    "PE": {
+      "name": "Perú",
+      "flag": "PE",
+      "copyrightOffice": {
+        "name": "Instituto Nacional de Defensa de la Competencia y de la Protección de la Propiedad Intelectual"
+      }
+    }
+  },
+  "cmos": {
+    "SAYCO": {
+      "acronym": "SAYCO",
+      "originalName": "Sociedad de Autores y Compositores de Colombia",
+      "country": "CO",
+      "logo": "https://members.cisac.org/logos/logo_society_91.png"
+    },
+    "SACM": {
+      "acronym": "SACM",
+      "originalName": "Sociedad de Autores y Compositores de México",
+      "country": "MX",
+      "logo": "https://members.cisac.org/logos/logo_society_100.png"
+    },
+    "SADAIC": {
+      "acronym": "SADAIC",
+      "originalName": "Sociedad Argentina de Autores y Compositores de Música",
+      "country": "AR",
+      "logo": "https://members.cisac.org/logos/logo_society_98.jpg"
+    },
+    "ABRAMUS": {
+      "acronym": "ABRAMUS",
+      "originalName": "Associação Brasileira de Música e Artes",
+      "country": "BR",
+      "logo": "https://members.cisac.org/logos/logo_society_504.jpg"
+    },
+    "ACAM": {
+      "acronym": "ACAM",
+      "originalName": "Asociación de Compositores y Autores Musicales de Costa Rica",
+      "country": "CR",
+      "logo": "https://members.cisac.org/logos/logo_society_4.jpg"
+    },
+    "ACCS": {
+      "acronym": "ACCS",
+      "originalName": "Association of Caribbean Copyright Societies",
+      "country": "TT",
+      "logo": "https://members.cisac.org/logos/ACCS.png"
+    },
+    "ACDAM": {
+      "acronym": "ACDAM",
+      "originalName": "Agencia de Creadores Dramáticos, Audiovisuales y Musicales",
+      "country": "CU",
+      "logo": "https://members.cisac.org/logos/logo_society_5.jpg"
+    },
+    "ADDAF": {
+      "acronym": "ADDAF",
+      "originalName": "Associação Defensora de Direitos Autorais",
+      "country": "BR",
+      "logo": "https://members.cisac.org/logos/ADDAF.png"
+    },
+    "AEI-GUATEMALA": {
+      "acronym": "AEI-GUATEMALA",
+      "originalName": "Asociación de Autores, Editores e Intérpretes",
+      "country": "GT",
+      "logo": "https://members.cisac.org/logos/AEI-GUATEMALA.png"
+    },
+    "AGADU": {
+      "acronym": "AGADU",
+      "originalName": "Asociación General de Autores del Uruguay",
+      "country": "UY",
+      "logo": "https://members.cisac.org/logos/logo_society_13.jpg"
+    },
+    "AMAR-SOMBRÁS": {
+      "acronym": "AMAR SOMBRÁS",
+      "originalName": "Associação de Músicos Arranjadores e Regentes / Sociedade Musical Brasileira",
+      "country": "BR",
+      "logo": "https://members.cisac.org/logos/logo_society_24.png"
+    },
+    "APA": {
+      "acronym": "APA",
+      "originalName": "Autores Paraguayos Asociados",
+      "country": "PY",
+      "logo": "https://members.cisac.org/logos/logo_society_27.png"
+    },
+    "APDAYC": {
+      "acronym": "APDAYC",
+      "originalName": "Asociación Peruana de Autores Y Compositores",
+      "country": "PE",
+      "logo": "https://members.cisac.org/logos/logo_society_194.png"
+    },
+    "ASSIM": {
+      "acronym": "ASSIM",
+      "originalName": "Associação de Intérpretes e Músicos",
+      "country": "BR",
+      "logo": "https://members.cisac.org/logos/logo_society_953.jpg"
+    },
+    "COSCAP": {
+      "acronym": "COSCAP",
+      "originalName": "Copyright Society of Composers, Authors and Publishers Incorporated",
+      "country": "BB",
+      "logo": "https://members.cisac.org/logos/logo_society_191.jpg"
+    },
+    "COTT": {
+      "acronym": "COTT",
+      "originalName": "Copyright Organisation of Trinidad and Tobago",
+      "country": "TT",
+      "logo": "https://members.cisac.org/logos/COTT.png"
+    },
+    "ECCO": {
+      "acronym": "ECCO",
+      "originalName": "Eastern Caribbean Collective Organisation for Music Rights Inc.",
+      "country": "LC",
+      "logo": "https://members.cisac.org/logos/ECCO.png"
+    },
+    "JACAP": {
+      "acronym": "JACAP",
+      "originalName": "Jamaica Association of Composers,Authors and Publishers Ltd",
+      "country": "JM",
+      "logo": "https://members.cisac.org/logos/JACAP.png"
+    },
+    "SACIM-EGC": {
+      "acronym": "SACIM-EGC",
+      "originalName": "Salvadoreños Autores, Compositores e Interpretes Musicales, Entidad de Gestión Colectiva",
+      "country": "SV",
+      "logo": "https://members.cisac.org/logos/logo_society_1333.jpg"
+    },
+    "SACVEN": {
+      "acronym": "SACVEN",
+      "originalName": "Sociedad de Autores y Compositores de Venezuela",
+      "country": "VE",
+      "logo": "https://members.cisac.org/logos/logo_society_99.JPG"
+    },
+    "SAYCE": {
+      "acronym": "SAYCE",
+      "originalName": "Sociedad General de Autores y Compositores del Ecuador",
+      "country": "VE",
+      "logo": "https://members.cisac.org/logos/logo_society_99.JPG"
+    },
+    "SBACEM": {
+      "acronym": "SBACEM",
+      "originalName": "Sociedade Brasileira de Autores, Compositores e Escritores de Musica",
+      "country": "BR",
+      "logo": "https://members.cisac.org/logos/logo_society_89.jpg"
+    },
+    "SCD": {
+      "acronym": "SCD",
+      "originalName": "Sociedad Chilena de Autores e Intérpretes Musicales",
+      "country": "CL",
+      "logo": "https://members.cisac.org/logos/logo_society_85.jpg"
+    },
+    "SGACEDOM": {
+      "acronym": "SGACEDOM",
+      "originalName": "Sociedad General de Autores, Compositores y Editores Dominicanos de Musica",
+      "country": "DO",
+      "logo": "https://members.cisac.org/logos/SGACEDOM.png"
+    },
+    "SICAM": {
+      "acronym": "SICAM",
+      "originalName": "Sociedade Independente de Compositores e Autores Musicais",
+      "country": "BR",
+      "logo": "https://members.cisac.org/logos/logo_society_174.png"
+    },
+    "SOBODAYCOM": {
+      "acronym": "SOBODAYCOM",
+      "originalName": "Sociedad Boliviana de Autores y Compositores de Música",
+      "country": "BO",
+      "logo": "https://members.cisac.org/logos/SOBODAYCOM.png"
+    },
+    "SOCINPRO": {
+      "acronym": "SOCINPRO",
+      "originalName": "Sociedade Brasileira de Administração e Proteção de Direitos Intelectuais",
+      "country": "BR",
+      "logo": "https://members.cisac.org/logos/logo_society_176.png"
+    },
+    "SPAC": {
+      "acronym": "SPAC",
+      "originalName": "Sociedad Panameña de Autores y Compositores",
+      "country": "PA",
+      "logo": "https://members.cisac.org/logos/logo_society_64.png"
+    },
+    "UBC": {
+      "acronym": "UBC",
+      "originalName": "União Brasileira de Compositores",
+      "country": "PA",
+      "logo": "https://members.cisac.org/logos/logo_society_53.png"
+    },
+    "AMRA": {
+      "acronym": "AMRA",
+      "originalName": "American Music Rights Association",
+      "country": "US",
+      "logo": "https://members.cisac.org/logos/AMRA.png"
+    },
+    "ASCAP": {
+      "acronym": "ASCAP",
+      "originalName": "American Society of Composers,Authors and Publishers",
+      "country": "US",
+      "logo": "https://members.cisac.org/logos/ASCAP.png"
+    },
+    "SOCAN": {
+      "acronym": "SOCAN",
+      "originalName": "Society of Composers, Authors and Music Publishers of Canada",
+      "country": "CA",
+      "logo": "https://members.cisac.org/logos/SOCAN.png"
+    },
+    "SPACQ-AE": {
+      "acronym": "SPACQ-AE",
+      "originalName": "Société professionnelle des auteurs, compositeurs du Québec et des artistes entrepreneurs",
+      "country": "CA",
+      "logo": "https://members.cisac.org/logos/logo_society_62.png"
+    },
+    "The MLC": {
+      "acronym": "The MLC",
+      "originalName": "Mechanical Licensing Collective",
+      "country": "US",
+      "logo": "https://members.cisac.org/logos/logo_society_2344.png"
+    },
+    "BMI": {
+      "acronym": "BMI",
+      "originalName": "Broadcast Music, Inc.",
+      "country": "US",
+      "logo": "https://www.bmi.com/frontend/images/logo.png"
+    },
+    "GMR": {
+      "acronym": "GMR",
+      "originalName": "Global Music Rights",
+      "country": "US",
+      "logo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3ZJzw79KziHJ543OU-O4Rpx7Q1stLWXjpiA&s"
+    },
+    "HFA": {
+      "acronym": "HFA",
+      "originalName": "The Harry Fox Agency",
+      "country": "US",
+      "logo": "https://www.harryfox.com/wp-content/uploads/2026/02/Harry-Fox-Agency-Logo-White.png"
+    },
+    "MRI": {
+      "acronym": "MRI",
+      "originalName": "Music Reports",
+      "country": "US",
+      "logo": "https://www.musicreports.com/images/layout/logo-footer.svg"
+    },
+    "SESAC": {
+      "acronym": "SESAC",
+      "originalName": "Sociedad de Autores y Compositores Europeos",
+      "country": "US",
+      "logo": "https://www.sesac.com/nitropack_static/JKciHVEhTdOzZJmdgyCcrerdCyXVXObc/assets/images/optimized/rev-aa861b1/www.sesac.com/wp-content/themes/sesac/assets/images/logo-sesac.svg"
+    }
+  }
+}

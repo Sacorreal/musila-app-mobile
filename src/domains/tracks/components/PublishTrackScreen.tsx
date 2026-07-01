@@ -18,10 +18,16 @@ import { useCreateTrack } from '@/domains/tracks/hooks/use-tracks.hooks';
 import { useUploadStorage } from '@/domains/storage/hooks/use-upload-storage.hooks';
 import { StorageFolder } from '@/domains/storage/types/storage.types';
 import { GenreSelectorMobile } from '@/domains/musical-genre/components/GenreSelectorMobile';
+import { useGenres } from '@/domains/musical-genre/hooks/use-musical-genre.hooks';
 import { createTrackSchema } from '@/domains/tracks/validations/track.schema';
 import { PublishSuccessScreen } from '@/domains/tracks/components/PublishSuccessScreen';
 import { FormInput } from '@/shared/components/ui/FormInput';
 import { FormToggle } from '@/shared/components/ui/FormToggle';
+import { SubGenreSelectorMobile } from './SubGenreSelectorMobile';
+import { LanguageSelectorMobile } from './LanguageSelectorMobile';
+import { AudioPickerField } from './AudioPickerField';
+import { CoverPickerField } from './CoverPickerField';
+import { IntellectualPropertyFormSection, type IPEntry } from './IntellectualPropertyFormSection';
 
 type FieldErrors = Partial<Record<string, string>>;
 
@@ -30,6 +36,7 @@ export function PublishTrackScreen() {
   const user = useAuthStore((s) => s.user);
   const createTrack = useCreateTrack();
   const { uploadFiles, isUploading } = useUploadStorage();
+  const { data: genres = [] } = useGenres();
 
   const [success, setSuccess] = useState(false);
 
@@ -39,19 +46,39 @@ export function PublishTrackScreen() {
   const [language, setLanguage] = useState('');
   const [lyric, setLyric] = useState('');
   const [audioUri, setAudioUri] = useState('');
+  const [audioFileName, setAudioFileName] = useState('');
+  const [audioMimeType, setAudioMimeType] = useState('audio/mpeg');
   const [coverUri, setCoverUri] = useState('');
   const [isAvailable, setIsAvailable] = useState(true);
   const [isGospel, setIsGospel] = useState(false);
+  const [ipEntries, setIpEntries] = useState<IPEntry[]>([]);
   const [errors, setErrors] = useState<FieldErrors>({});
+
+  const selectedGenre = genres.find((g) => g.id === genreId);
+  const availableSubGenres = selectedGenre?.subGenre ?? [];
 
   const reset = () => {
     setTitle(''); setGenreId(''); setSubGenre(''); setLanguage('');
-    setLyric(''); setAudioUri(''); setCoverUri('');
-    setIsAvailable(true); setIsGospel(false); setErrors({});
+    setLyric(''); setAudioUri(''); setAudioFileName(''); setAudioMimeType('audio/mpeg');
+    setCoverUri(''); setIsAvailable(true); setIsGospel(false);
+    setIpEntries([]); setErrors({});
     setSuccess(false);
   };
 
   const handleSubmit = async () => {
+    // Validate IP entries first (show specific errors in context)
+    for (let i = 0; i < ipEntries.length; i++) {
+      const ip = ipEntries[i];
+      if (ip.type !== 'splitSheet' && !ip.key) {
+        Toast.show({ type: 'error', text1: 'Propiedad intelectual incompleta', text2: `Entrada ${i + 1}: selecciona una opción` });
+        return;
+      }
+      if (!ip.documentUri) {
+        Toast.show({ type: 'error', text1: 'Propiedad intelectual incompleta', text2: `Entrada ${i + 1}: adjunta el documento PDF` });
+        return;
+      }
+    }
+
     const formState = {
       title, genreId, language, lyric, audioUri,
       coverUri: coverUri || undefined,
@@ -75,8 +102,14 @@ export function PublishTrackScreen() {
 
     try {
       const filesToUpload = [
-        { uri: result.data.audioUri, mimeType: 'audio/mpeg', folder: StorageFolder.TRACKS, field: 'audio' },
+        { uri: result.data.audioUri, mimeType: audioMimeType, folder: StorageFolder.TRACKS, field: 'audio' },
         ...(result.data.coverUri ? [{ uri: result.data.coverUri, mimeType: 'image/jpeg', folder: StorageFolder.COVERS, field: 'cover' }] : []),
+        ...ipEntries.map((ip, idx) => ({
+          uri: ip.documentUri,
+          mimeType: 'application/pdf',
+          folder: StorageFolder.DOCUMENTS,
+          field: `ip_${idx}`,
+        })),
       ];
 
       const uploaded = await uploadFiles(filesToUpload);
@@ -98,6 +131,15 @@ export function PublishTrackScreen() {
         audioUrl: audioFile.publicUrl,
         coverKey: coverFile?.key,
         coverUrl: coverFile?.publicUrl,
+        intellectualProperties: ipEntries.map((ip, idx) => {
+          const ipFile = uploaded.find((u) => u.field === `ip_${idx}`);
+          return {
+            type: ip.type,
+            key: ip.key,
+            documentKey: ipFile!.key,
+            documentUrl: ipFile!.publicUrl,
+          };
+        }),
       });
 
       setSuccess(true);
@@ -147,29 +189,41 @@ export function PublishTrackScreen() {
             error={errors.title}
           />
 
-          <View style={styles.genreWrapper}>
-            <Text style={styles.genreLabel}>Género *</Text>
+          {/* Género */}
+          <View style={styles.fieldWrapper}>
+            <Text style={styles.fieldLabel}>Género *</Text>
             <GenreSelectorMobile
               value={genreId}
-              onChange={(id) => { setGenreId(id); setErrors((p) => ({ ...p, genreId: undefined })); }}
+              onChange={(id) => {
+                setGenreId(id);
+                setSubGenre('');
+                setErrors((p) => ({ ...p, genreId: undefined }));
+              }}
               error={errors.genreId}
             />
           </View>
 
-          <FormInput
-            label="Subgénero"
-            placeholder="Ej. Pop balada"
-            value={subGenre}
-            onChangeText={setSubGenre}
-          />
+          {/* Subgénero — solo si el género tiene subgéneros */}
+          {availableSubGenres.length > 0 && (
+            <View style={styles.fieldWrapper}>
+              <Text style={styles.fieldLabel}>Subgénero</Text>
+              <SubGenreSelectorMobile
+                subGenres={availableSubGenres}
+                value={subGenre}
+                onChange={setSubGenre}
+              />
+            </View>
+          )}
 
-          <FormInput
-            label="Idioma *"
-            placeholder="Ej. Español"
-            value={language}
-            onChangeText={(t) => { setLanguage(t); setErrors((p) => ({ ...p, language: undefined })); }}
-            error={errors.language}
-          />
+          {/* Idioma */}
+          <View style={styles.fieldWrapper}>
+            <Text style={styles.fieldLabel}>Idioma *</Text>
+            <LanguageSelectorMobile
+              value={language}
+              onChange={(code) => { setLanguage(code); setErrors((p) => ({ ...p, language: undefined })); }}
+              error={errors.language}
+            />
+          </View>
 
           <FormInput
             label="Letra *"
@@ -180,19 +234,38 @@ export function PublishTrackScreen() {
             multiline
           />
 
-          <FormInput
-            label="URI del audio *"
-            placeholder="URI o ruta del archivo de audio"
-            value={audioUri}
-            onChangeText={(t) => { setAudioUri(t); setErrors((p) => ({ ...p, audioUri: undefined })); }}
-            error={errors.audioUri}
-          />
+          {/* Audio */}
+          <View style={styles.fieldWrapper}>
+            <Text style={styles.fieldLabel}>Audio *</Text>
+            <AudioPickerField
+              uri={audioUri}
+              fileName={audioFileName}
+              mimeType={audioMimeType}
+              onPick={(uri, name, mime) => {
+                setAudioUri(uri);
+                setAudioFileName(name);
+                setAudioMimeType(mime);
+                setErrors((p) => ({ ...p, audioUri: undefined }));
+              }}
+              onClear={() => { setAudioUri(''); setAudioFileName(''); setAudioMimeType('audio/mpeg'); }}
+              error={errors.audioUri}
+            />
+          </View>
 
-          <FormInput
-            label="URI de la portada"
-            placeholder="URI o ruta de la imagen de portada"
-            value={coverUri}
-            onChangeText={setCoverUri}
+          {/* Portada */}
+          <View style={styles.fieldWrapper}>
+            <Text style={styles.fieldLabel}>Portada</Text>
+            <CoverPickerField
+              uri={coverUri}
+              onPick={setCoverUri}
+              onClear={() => setCoverUri('')}
+            />
+          </View>
+
+          {/* Propiedad Intelectual */}
+          <IntellectualPropertyFormSection
+            entries={ipEntries}
+            onChange={setIpEntries}
           />
 
           <FormToggle
@@ -270,10 +343,10 @@ const styles = StyleSheet.create({
     ...Typography.body,
     color: 'rgba(255,255,255,0.4)',
   },
-  genreWrapper: {
+  fieldWrapper: {
     marginBottom: 18,
   },
-  genreLabel: {
+  fieldLabel: {
     fontSize: 11,
     fontWeight: '600',
     letterSpacing: 1.2,
