@@ -35,7 +35,7 @@ export function PublishTrackScreen() {
   const insets = useSafeAreaInsets();
   const user = useAuthStore((s) => s.user);
   const createTrack = useCreateTrack();
-  const { uploadFiles, isUploading } = useUploadStorage();
+  const { uploadFiles, rollback, isUploading } = useUploadStorage();
   const { data: genres = [] } = useGenres();
 
   const [success, setSuccess] = useState(false);
@@ -49,6 +49,7 @@ export function PublishTrackScreen() {
   const [audioFileName, setAudioFileName] = useState('');
   const [audioMimeType, setAudioMimeType] = useState('audio/mpeg');
   const [coverUri, setCoverUri] = useState('');
+  const [coverMimeType, setCoverMimeType] = useState('image/jpeg');
   const [isAvailable, setIsAvailable] = useState(true);
   const [isGospel, setIsGospel] = useState(false);
   const [ipEntries, setIpEntries] = useState<IPEntry[]>([]);
@@ -60,7 +61,7 @@ export function PublishTrackScreen() {
   const reset = () => {
     setTitle(''); setGenreId(''); setSubGenre(''); setLanguage('');
     setLyric(''); setAudioUri(''); setAudioFileName(''); setAudioMimeType('audio/mpeg');
-    setCoverUri(''); setIsAvailable(true); setIsGospel(false);
+    setCoverUri(''); setCoverMimeType('image/jpeg'); setIsAvailable(true); setIsGospel(false);
     setIpEntries([]); setErrors({});
     setSuccess(false);
   };
@@ -100,19 +101,21 @@ export function PublishTrackScreen() {
 
     setErrors({});
 
+    let uploaded: Array<{ field: string; key: string; publicUrl: string }> = [];
+
     try {
       const filesToUpload = [
         { uri: result.data.audioUri, mimeType: audioMimeType, folder: StorageFolder.TRACKS, field: 'audio' },
-        ...(result.data.coverUri ? [{ uri: result.data.coverUri, mimeType: 'image/jpeg', folder: StorageFolder.COVERS, field: 'cover' }] : []),
+        ...(result.data.coverUri ? [{ uri: result.data.coverUri, mimeType: coverMimeType, folder: StorageFolder.COVERS, field: 'cover' }] : []),
         ...ipEntries.map((ip, idx) => ({
           uri: ip.documentUri,
           mimeType: 'application/pdf',
-          folder: StorageFolder.DOCUMENTS,
+          folder: StorageFolder.INTELLECTUAL_PROPERTY,
           field: `ip_${idx}`,
         })),
       ];
 
-      const uploaded = await uploadFiles(filesToUpload);
+      uploaded = await uploadFiles(filesToUpload);
       const audioFile = uploaded.find((u) => u.field === 'audio');
       const coverFile = uploaded.find((u) => u.field === 'cover');
 
@@ -144,10 +147,14 @@ export function PublishTrackScreen() {
 
       setSuccess(true);
     } catch (err: any) {
+      if (uploaded.length > 0) {
+        rollback(uploaded.map((u) => u.key)).catch(() => {});
+      }
+      console.error('[PublishTrackScreen] handleSubmit failed:', err);
       Toast.show({
         type: 'error',
         text1: 'No se pudo publicar',
-        text2: err?.response?.data?.message ?? 'Intenta de nuevo',
+        text2: err?.response?.data?.message ?? err?.message ?? 'Intenta de nuevo',
       });
     }
   };
@@ -257,8 +264,8 @@ export function PublishTrackScreen() {
             <Text style={styles.fieldLabel}>Portada</Text>
             <CoverPickerField
               uri={coverUri}
-              onPick={setCoverUri}
-              onClear={() => setCoverUri('')}
+              onPick={(uri, mimeType) => { setCoverUri(uri); setCoverMimeType(mimeType); }}
+              onClear={() => { setCoverUri(''); setCoverMimeType('image/jpeg'); }}
             />
           </View>
 

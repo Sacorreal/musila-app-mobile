@@ -34,5 +34,7 @@ export function useUploadStorage() {
     return results;
   };
 
-  return { uploadFiles, progresses, isUploading };
+  const rollback = (keys: string[]): Promise<void> => storageService.deleteBatch(keys);
+
+  return { uploadFiles, rollback, progresses, isUploading };
 }

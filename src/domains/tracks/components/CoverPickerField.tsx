@@ -6,7 +6,7 @@ import { Brand, Typography } from '@/constants/theme';
 
 interface CoverPickerFieldProps {
   uri: string;
-  onPick: (uri: string) => void;
+  onPick: (uri: string, mimeType: string) => void;
   onClear: () => void;
   error?: string;
 }
@@ -20,7 +20,8 @@ export function CoverPickerField({ uri, onPick, onClear, error }: CoverPickerFie
       quality: 0.8,
     });
     if (!result.canceled && result.assets?.[0]) {
-      onPick(result.assets[0].uri);
+      const asset = result.assets[0];
+      onPick(asset.uri, asset.mimeType ?? 'image/jpeg');
     }
   };
 

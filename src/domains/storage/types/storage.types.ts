@@ -1,8 +1,9 @@
 export enum StorageFolder {
-  TRACKS = 'tracks',
-  COVERS = 'covers',
-  AVATARS = 'avatars',
+  TRACKS = 'tracks/audio',
+  COVERS = 'tracks/covers',
+  AVATARS = 'users/avatars',
   DOCUMENTS = 'documents',
+  INTELLECTUAL_PROPERTY = 'intellectual-property',
 }
 
 export interface PresignedUrlRequest {
