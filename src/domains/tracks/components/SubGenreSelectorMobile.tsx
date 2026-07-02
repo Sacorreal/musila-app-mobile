@@ -1,4 +1,5 @@
 import { FlatList, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useState } from 'react';
 import { Brand, Typography } from '@/constants/theme';
@@ -12,6 +13,7 @@ interface SubGenreSelectorMobileProps {
 
 export function SubGenreSelectorMobile({ subGenres, value, onChange, error }: SubGenreSelectorMobileProps) {
   const [open, setOpen] = useState(false);
+  const insets = useSafeAreaInsets();
 
   if (subGenres.length === 0) return null;
 
@@ -30,7 +32,7 @@ export function SubGenreSelectorMobile({ subGenres, value, onChange, error }: Su
 
       <Modal visible={open} transparent animationType="slide" onRequestClose={() => setOpen(false)}>
         <Pressable style={styles.backdrop} onPress={() => setOpen(false)}>
-          <View style={styles.sheet}>
+          <View style={[styles.sheet, { paddingBottom: 20 + insets.bottom }]}>
             <View style={styles.sheetHandle} />
             <Text style={styles.sheetTitle}>Seleccionar subgénero</Text>
             <FlatList
@@ -87,8 +89,10 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 24,
     borderTopWidth: 1,
     borderColor: 'rgba(255,255,255,0.1)',
-    padding: 20,
-    maxHeight: '70%',
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    minHeight: '45%',
+    maxHeight: '80%',
   },
   sheetHandle: {
     width: 40,

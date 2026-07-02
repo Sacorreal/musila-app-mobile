@@ -1,4 +1,5 @@
 import { FlatList, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Brand, Typography } from '@/constants/theme';
 import { useGenres } from '../hooks/use-musical-genre.hooks';
 import type { MusicalGenreDto } from '../types/musical-genre.types';
@@ -13,6 +14,7 @@ interface GenreSelectorMobileProps {
 
 export function GenreSelectorMobile({ value, onChange, error }: GenreSelectorMobileProps) {
   const [open, setOpen] = useState(false);
+  const insets = useSafeAreaInsets();
   const { data: genres = [] } = useGenres();
 
   const selectedGenre = genres.find((g) => g.id === value);
@@ -37,7 +39,7 @@ export function GenreSelectorMobile({ value, onChange, error }: GenreSelectorMob
 
       <Modal visible={open} transparent animationType="slide" onRequestClose={() => setOpen(false)}>
         <Pressable style={styles.backdrop} onPress={() => setOpen(false)}>
-          <View style={styles.sheet}>
+          <View style={[styles.sheet, { paddingBottom: 20 + insets.bottom }]}>
             <View style={styles.sheetHandle} />
             <Text style={styles.sheetTitle}>Seleccionar género</Text>
             <FlatList
@@ -110,8 +112,10 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 24,
     borderTopWidth: 1,
     borderColor: 'rgba(255,255,255,0.1)',
-    padding: 20,
-    maxHeight: '70%',
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    minHeight: '45%',
+    maxHeight: '80%',
   },
   sheetHandle: {
     width: 40,

@@ -1,5 +1,8 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import type { GestureResponderEvent } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
+import { useAudioPlayer, useAudioPlayerStatus, setAudioModeAsync } from 'expo-audio';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Brand, Typography } from '@/constants/theme';
 
@@ -12,7 +15,36 @@ interface AudioPickerFieldProps {
   error?: string;
 }
 
+function formatTime(seconds: number): string {
+  if (!Number.isFinite(seconds) || seconds < 0) return '0:00';
+  const total = Math.floor(seconds);
+  const mins = Math.floor(total / 60);
+  const secs = total % 60;
+  return `${mins}:${secs.toString().padStart(2, '0')}`;
+}
+
 export function AudioPickerField({ uri, fileName, onPick, onClear, error }: AudioPickerFieldProps) {
+  useEffect(() => {
+    setAudioModeAsync({ playsInSilentMode: true }).catch(() => {});
+  }, []);
+
+  const player = useAudioPlayer(uri || null);
+  const status = useAudioPlayerStatus(player);
+  const [barWidth, setBarWidth] = useState(0);
+  const progress = status.duration > 0 ? status.currentTime / status.duration : 0;
+
+  useEffect(() => {
+    if (status.didJustFinish) {
+      player.seekTo(0).catch(() => {});
+    }
+  }, [status.didJustFinish]);
+
+  const handleSeek = (e: GestureResponderEvent) => {
+    if (!barWidth || !status.duration) return;
+    const ratio = Math.min(Math.max(e.nativeEvent.locationX / barWidth, 0), 1);
+    player.seekTo(ratio * status.duration).catch(() => {});
+  };
+
   const handlePick = async () => {
     const result = await DocumentPicker.getDocumentAsync({
       type: ['audio/*'],
@@ -43,19 +75,51 @@ export function AudioPickerField({ uri, fileName, onPick, onClear, error }: Audi
   return (
     <View style={styles.wrapper}>
       <View style={[styles.selectedBox, !!error && styles.emptyBoxError]}>
-        <View style={styles.iconCircle}>
-          <MaterialCommunityIcons name="file-music" size={22} color={Brand.accent} />
-        </View>
-        <Text style={styles.fileName} numberOfLines={1}>
-          {fileName}
-        </Text>
         <Pressable
-          style={({ pressed }) => [styles.clearBtn, pressed && { opacity: 0.6 }]}
-          onPress={onClear}
+          style={({ pressed }) => [styles.playBtn, pressed && styles.playBtnPressed]}
+          onPress={() => (status.playing ? player.pause() : player.play())}
+          disabled={!status.isLoaded}
           hitSlop={8}
         >
-          <MaterialCommunityIcons name="close-circle" size={20} color="rgba(255,255,255,0.4)" />
+          {status.isBuffering || !status.isLoaded ? (
+            <ActivityIndicator size="small" color={Brand.accent} />
+          ) : (
+            <MaterialCommunityIcons
+              name={status.playing ? 'pause' : 'play'}
+              size={22}
+              color={Brand.accent}
+            />
+          )}
         </Pressable>
+
+        <View style={styles.infoColumn}>
+          <View style={styles.fileNameRow}>
+            <Text style={styles.fileName} numberOfLines={1}>
+              {fileName}
+            </Text>
+            <Pressable
+              style={({ pressed }) => [styles.clearBtn, pressed && { opacity: 0.6 }]}
+              onPress={onClear}
+              hitSlop={8}
+            >
+              <MaterialCommunityIcons name="close-circle" size={20} color="rgba(255,255,255,0.4)" />
+            </Pressable>
+          </View>
+
+          <View style={styles.progressRow}>
+            <Pressable
+              style={styles.progressTrack}
+              onLayout={(e) => setBarWidth(e.nativeEvent.layout.width)}
+              onPress={handleSeek}
+              hitSlop={4}
+            >
+              <View style={[styles.progressFill, { width: `${progress * 100}%` }]} />
+            </Pressable>
+            <Text style={styles.timeText}>
+              {formatTime(status.currentTime)} / {formatTime(status.duration)}
+            </Text>
+          </View>
+        </View>
       </View>
       {!!error && <Text style={styles.errorText}>{error}</Text>}
     </View>
@@ -89,7 +153,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     gap: 12,
   },
-  iconCircle: {
+  playBtn: {
     width: 40,
     height: 40,
     borderRadius: 10,
@@ -98,7 +162,31 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexShrink: 0,
   },
+  playBtnPressed: { opacity: 0.7 },
+  infoColumn: { flex: 1, gap: 6 },
+  fileNameRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   fileName: { ...Typography.label, color: '#FFFFFF', flex: 1, fontWeight: '500' },
   clearBtn: { flexShrink: 0 },
+  progressRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  progressTrack: {
+    flex: 1,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: 'rgba(255,255,255,0.12)',
+    overflow: 'hidden',
+    justifyContent: 'center',
+  },
+  progressFill: {
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: Brand.accent,
+  },
+  timeText: {
+    ...Typography.caption,
+    color: 'rgba(255,255,255,0.5)',
+    flexShrink: 0,
+    minWidth: 72,
+    textAlign: 'right',
+  },
   errorText: { ...Typography.caption, color: 'rgba(255,85,85,0.9)', marginTop: 6 },
 });
