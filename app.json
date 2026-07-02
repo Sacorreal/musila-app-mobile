@@ -1,13 +1,16 @@
 {
   "expo": {
     "name": "Musila",
-    "slug": "Musila",
+    "slug": "musila",
     "version": "1.0.0",
+    "runtimeVersion": {"policy": "fingerprint"},
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "musilaappmobile",
     "userInterfaceStyle": "automatic",
     "ios": {
+      "bundleIdentifier": "com.sacorrea.musila",
+      "buildNumber": "1",
       "icon": "./assets/images/icon.png"
     },
     "android": {
@@ -18,6 +21,7 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
+      "versionCode": 1,
       "package": "com.sacorrea.musila"
     },
     "web": {
@@ -83,6 +87,14 @@
         "projectId": "72391c15-4f65-4877-8c19-8ae262affc49"
       }
     },
-    "owner": "sacorrea"
+    "owner": "sacorrea", 
+    "updates": {
+      "enabled": true,
+  "checkAutomatically": "ON_LOAD",
+  "fallbackToCacheTimeout": 0
+    }
+
+  
   }
+  
 }
