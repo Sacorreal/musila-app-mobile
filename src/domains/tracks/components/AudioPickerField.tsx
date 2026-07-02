@@ -25,7 +25,11 @@ function formatTime(seconds: number): string {
 
 export function AudioPickerField({ uri, fileName, onPick, onClear, error }: AudioPickerFieldProps) {
   useEffect(() => {
-    setAudioModeAsync({ playsInSilentMode: true }).catch(() => {});
+    setAudioModeAsync({
+      playsInSilentMode: true,
+      shouldPlayInBackground: true,
+      interruptionMode: 'doNotMix',
+    }).catch(() => {});
   }, []);
 
   const player = useAudioPlayer(uri || null);
@@ -38,6 +42,18 @@ export function AudioPickerField({ uri, fileName, onPick, onClear, error }: Audi
       player.seekTo(0).catch(() => {});
     }
   }, [status.didJustFinish]);
+
+  useEffect(() => {
+    if (status.playing) {
+      player.setActiveForLockScreen(true, { title: fileName });
+    }
+  }, [status.playing, fileName, player]);
+
+  useEffect(() => {
+    return () => {
+      player.clearLockScreenControls();
+    };
+  }, [player]);
 
   const handleSeek = (e: GestureResponderEvent) => {
     if (!barWidth || !status.duration) return;
