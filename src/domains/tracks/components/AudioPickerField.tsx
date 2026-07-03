@@ -23,6 +23,19 @@ function formatTime(seconds: number): string {
   return `${mins}:${secs.toString().padStart(2, '0')}`;
 }
 
+const AUDIO_MIME_BY_EXTENSION: Record<string, string> = {
+  mp3: 'audio/mpeg',
+  wav: 'audio/x-wav',
+  m4a: 'audio/mp4',
+  '3gp': 'audio/3gpp',
+};
+
+function inferAudioMimeType(fileName: string | undefined, reportedMimeType: string | null | undefined): string {
+  if (reportedMimeType) return reportedMimeType;
+  const extension = fileName?.split('.').pop()?.toLowerCase();
+  return (extension && AUDIO_MIME_BY_EXTENSION[extension]) || 'audio/mpeg';
+}
+
 export function AudioPickerField({ uri, fileName, onPick, onClear, error }: AudioPickerFieldProps) {
   useEffect(() => {
     setAudioModeAsync({
@@ -49,12 +62,6 @@ export function AudioPickerField({ uri, fileName, onPick, onClear, error }: Audi
     }
   }, [status.playing, fileName, player]);
 
-  useEffect(() => {
-    return () => {
-      player.clearLockScreenControls();
-    };
-  }, [player]);
-
   const handleSeek = (e: GestureResponderEvent) => {
     if (!barWidth || !status.duration) return;
     const ratio = Math.min(Math.max(e.nativeEvent.locationX / barWidth, 0), 1);
@@ -68,7 +75,7 @@ export function AudioPickerField({ uri, fileName, onPick, onClear, error }: Audi
     });
     if (!result.canceled && result.assets?.[0]) {
       const asset = result.assets[0];
-      onPick(asset.uri, asset.name, asset.mimeType ?? 'audio/mpeg', asset.size);
+      onPick(asset.uri, asset.name, inferAudioMimeType(asset.name, asset.mimeType), asset.size);
     }
   };
 
