@@ -21,6 +21,8 @@ export function MoreScreen() {
   const comingSoon = (label: string) =>
     Toast.show({ type: 'info', text1: label, text2: 'Próximamente disponible' });
 
+  const isAuthor = user?.role === UserRole.AUTOR;
+
   const menuOptions: MenuOption[] = [
     {
       icon: 'account-circle-outline',
@@ -28,12 +30,16 @@ export function MoreScreen() {
       description: 'Ver y editar tu información personal',
       action: () => comingSoon('Mi Perfil'),
     },
-    {
-      icon: 'account-plus-outline',
-      label: 'Invitar Usuario',
-      description: 'Genera un enlace de invitación',
-      action: () => comingSoon('Invitar Usuario'),
-    },
+    ...(isAuthor
+      ? []
+      : [
+          {
+            icon: 'account-plus-outline' as const,
+            label: 'Invitar Usuario',
+            description: 'Genera un enlace de invitación',
+            action: () => comingSoon('Invitar Usuario'),
+          },
+        ]),
     {
       icon: 'cog-outline',
       label: 'Ajustes',

@@ -1,18 +1,17 @@
 import { Image } from 'expo-image';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { Brand, Typography } from '@/constants/theme';
+import { Brand } from '@/constants/theme';
 import type { TracksResponseDto } from '../types/tracks.types';
 import { resolveGenreName } from '../utils/resolveGenreName';
 
-interface TrackCardProps {
+interface FeaturedTrackCardProps {
   track: TracksResponseDto;
   onPress?: (track: TracksResponseDto) => void;
 }
 
-const COVER_SIZE = 56;
 const PLACEHOLDER = require('@/assets/images/icon.png');
 
-export function TrackCard({ track, onPress }: TrackCardProps) {
+export function FeaturedTrackCard({ track, onPress }: FeaturedTrackCardProps) {
   const authorLabel = Array.isArray(track.authors)
     ? track.authors
         .map((a) => (typeof a === 'string' ? a : `${a.name} ${a.lastName}`))
@@ -27,79 +26,74 @@ export function TrackCard({ track, onPress }: TrackCardProps) {
       style={({ pressed }) => [styles.container, pressed && styles.pressed]}
       onPress={() => onPress?.(track)}
     >
-      <Image
-        source={track.coverUrl ? { uri: track.coverUrl } : PLACEHOLDER}
-        style={styles.cover}
-        contentFit="cover"
-      />
-      <View style={styles.info}>
-        <Text style={styles.title} numberOfLines={1}>
-          {track.title}
-        </Text>
-        {!!authorLabel && (
-          <Text style={styles.author} numberOfLines={1}>
-            {authorLabel}
-          </Text>
-        )}
-        {!!genreLabel && (
-          <Text style={styles.genre} numberOfLines={1}>
-            {genreLabel}
-          </Text>
-        )}
+      <View style={styles.coverWrapper}>
+        <Image
+          source={track.coverUrl ? { uri: track.coverUrl } : PLACEHOLDER}
+          style={styles.cover}
+          contentFit="cover"
+        />
+        <View style={[styles.dot, track.isAvailable ? styles.dotActive : styles.dotInactive]} />
       </View>
-      <View style={[styles.dot, track.isAvailable ? styles.dotActive : styles.dotInactive]} />
+      <Text style={styles.title}>{track.title}</Text>
+      {!!authorLabel && <Text style={styles.author}>{authorLabel}</Text>}
+      {!!genreLabel && <Text style={styles.genre}>{genreLabel}</Text>}
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    alignItems: 'center',
     backgroundColor: 'rgba(255,255,255,0.05)',
     borderRadius: 14,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.08)',
-    padding: 10,
-    gap: 12,
-    marginBottom: 8,
+    padding: 8,
+    gap: 4,
   },
   pressed: {
     opacity: 0.75,
     transform: [{ scale: 0.98 }],
   },
+  coverWrapper: {
+    position: 'relative',
+    marginBottom: 2,
+  },
   cover: {
-    width: COVER_SIZE,
-    height: COVER_SIZE,
+    width: '100%',
+    aspectRatio: 1,
     borderRadius: 10,
     backgroundColor: 'rgba(255,255,255,0.08)',
   },
-  info: {
-    flex: 1,
-    gap: 3,
-  },
   title: {
-    ...Typography.label,
+    fontSize: 12,
+    lineHeight: 15,
     color: '#FFFFFF',
     fontWeight: '600',
   },
   author: {
-    ...Typography.caption,
+    fontSize: 10,
+    lineHeight: 13,
     color: 'rgba(255,255,255,0.5)',
   },
   genre: {
-    ...Typography.caption,
+    fontSize: 10,
+    lineHeight: 13,
     color: Brand.accent,
   },
   dot: {
+    position: 'absolute',
+    top: 6,
+    right: 6,
     width: 8,
     height: 8,
     borderRadius: 4,
+    borderWidth: 1.5,
+    borderColor: '#111827',
   },
   dotActive: {
     backgroundColor: '#4ade80',
   },
   dotInactive: {
-    backgroundColor: 'rgba(255,255,255,0.2)',
+    backgroundColor: 'rgba(255,255,255,0.3)',
   },
 });

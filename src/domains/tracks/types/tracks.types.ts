@@ -24,10 +24,12 @@ export interface IntellectualPropertyInput {
   documentUrl: string;
 }
 
+export type TrackGenre = string | { id: string; genre: string; slug: string };
+
 export interface TracksResponseDto {
   id: string;
   title: string;
-  genre: string;
+  genre: TrackGenre;
   subGenre: string;
   coverUrl: string;
   audioUrl: string | null;
@@ -100,4 +102,6 @@ export interface PaginatedTracksResponse {
 }
 
 
-export type UpdateTrackInput = Partial<CreateTrackInput>
+export type UpdateTrackInput = Partial<CreateTrackInput>;
+
+export type AvailabilityFilter = 'all' | 'available' | 'unavailable';

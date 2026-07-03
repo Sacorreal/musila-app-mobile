@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { requestsService } from '../services/requests.service';
-import type { RequestStatus } from '../types/requests.types';
+import type { CreateRequestedTrackInput, RequestStatus } from '../types/requests.types';
 
 export function useRequests() {
   return useQuery({
@@ -14,6 +14,16 @@ export function useUpdateRequestStatus() {
   return useMutation({
     mutationFn: ({ id, status }: { id: string; status: RequestStatus }) =>
       requestsService.updateStatus(id, status),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['requests'] });
+    },
+  });
+}
+
+export function useCreateRequest() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (input: CreateRequestedTrackInput) => requestsService.createRequestedTrack(input),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['requests'] });
     },

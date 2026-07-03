@@ -1,3 +1,5 @@
+import type { LicenseType } from '@/domains/tracks/types/tracks.types';
+
 export enum RequestStatus {
   PENDIENTE = 'pendiente',
   APROBADA = 'aprobada',
@@ -39,4 +41,9 @@ export interface TrackRequest {
 export interface PaginatedRequestsResponse {
   data: TrackRequest[];
   total: number;
+}
+
+export interface CreateRequestedTrackInput {
+  trackId: string;
+  licenseType: LicenseType;
 }

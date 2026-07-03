@@ -21,6 +21,8 @@ import type { TracksResponseDto } from '../types/tracks.types';
 import { IntellectualPropertySection } from './IntellectualPropertySection';
 import { TrackRequestsSection } from './TrackRequestsSection';
 import { AddToPlaylistBottomSheet } from './AddToPlaylistBottomSheet';
+import { RequestUseModal } from './RequestUseModal';
+import { resolveGenreName } from '../utils/resolveGenreName';
 
 const COVER_PLACEHOLDER = require('@/assets/images/icon.png');
 
@@ -43,6 +45,7 @@ export function TrackDetailScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const role = useAuthStore((s) => s.user?.role);
+  const userId = useAuthStore((s) => s.user?.id);
   const { data: track, isLoading, isError, refetch } = useTrackById(id ?? '');
   const setTrack = usePlayerStore((s) => s.setTrack);
   const currentTrack = usePlayerStore((s) => s.currentTrack);
@@ -50,6 +53,7 @@ export function TrackDetailScreen() {
   const setPlaying = usePlayerStore((s) => s.setPlaying);
 
   const [showPlaylistSheet, setShowPlaylistSheet] = useState(false);
+  const [showRequestModal, setShowRequestModal] = useState(false);
 
   const isAuthorRole = role === UserRole.AUTOR || role === UserRole.CANTAUTOR;
   const canAddToPlaylist = role !== UserRole.AUTOR;
@@ -108,6 +112,11 @@ export function TrackDetailScreen() {
     .map((a) => (typeof a === 'string' ? a : `${a.name} ${a.lastName}`))
     .join(', ');
 
+  const isOwner = (track.authors as any[]).some((a) => typeof a !== 'string' && a.id === userId);
+  const canRequestUse = role !== UserRole.INVITADO && !isOwner;
+  const hasSecondaryActions = canAddToPlaylist || canRequestUse;
+  const genreName = resolveGenreName(track.genre);
+
   return (
     <>
       <ScrollView
@@ -143,12 +152,31 @@ export function TrackDetailScreen() {
 
         {/* Cover */}
         <ReAnimated.View entering={FadeInDown.delay(60).springify()} style={styles.coverWrapper}>
-          <Image
-            source={track.coverUrl ? { uri: track.coverUrl } : COVER_PLACEHOLDER}
-            style={styles.cover}
-            contentFit="cover"
-          />
-          <View style={[styles.availabilityDot, track.isAvailable ? styles.dotActive : styles.dotInactive]} />
+          <View style={styles.coverBox}>
+            <Image
+              source={track.coverUrl ? { uri: track.coverUrl } : COVER_PLACEHOLDER}
+              style={styles.cover}
+              contentFit="cover"
+            />
+            <View style={[styles.availabilityDot, track.isAvailable ? styles.dotActive : styles.dotInactive]} />
+            <Pressable
+              style={({ pressed }) => [
+                styles.playFab,
+                !track.audioUrl && styles.playFabDisabled,
+                pressed && { transform: [{ scale: 0.94 }] },
+              ]}
+              onPress={handlePlay}
+              disabled={!track.audioUrl}
+              hitSlop={8}
+            >
+              <MaterialCommunityIcons
+                name={isCurrentlyPlaying ? 'pause' : 'play'}
+                size={26}
+                color="#FFFFFF"
+                style={!isCurrentlyPlaying ? styles.playFabIconOffset : undefined}
+              />
+            </Pressable>
+          </View>
         </ReAnimated.View>
 
         {/* Title & Authors */}
@@ -164,9 +192,9 @@ export function TrackDetailScreen() {
 
         {/* Badges */}
         <ReAnimated.View entering={FadeInDown.delay(160).springify()} style={styles.badges}>
-          {!!track.genre && (
+          {!!genreName && (
             <View style={styles.badge}>
-              <Text style={styles.badgeText}>{track.genre}</Text>
+              <Text style={styles.badgeText}>{genreName}</Text>
             </View>
           )}
           {!!track.subGenre && (
@@ -188,36 +216,29 @@ export function TrackDetailScreen() {
         </ReAnimated.View>
 
         {/* Action Buttons */}
-        <ReAnimated.View entering={FadeInDown.delay(200).springify()} style={styles.actions}>
-          <Pressable
-            style={({ pressed }) => [
-              styles.playBtn,
-              !track.audioUrl && styles.btnDisabled,
-              pressed && { opacity: 0.85, transform: [{ scale: 0.97 }] },
-            ]}
-            onPress={handlePlay}
-            disabled={!track.audioUrl}
-          >
-            <MaterialCommunityIcons
-              name={isCurrentlyPlaying ? 'pause' : 'play'}
-              size={22}
-              color="#FFFFFF"
-            />
-            <Text style={styles.playBtnText}>
-              {isCurrentlyPlaying ? 'Pausar' : 'Reproducir'}
-            </Text>
-          </Pressable>
+        {hasSecondaryActions && (
+          <ReAnimated.View entering={FadeInDown.delay(200).springify()} style={styles.actions}>
+            {canAddToPlaylist && (
+              <Pressable
+                style={({ pressed }) => [styles.playlistBtn, pressed && { opacity: 0.7 }]}
+                onPress={() => setShowPlaylistSheet(true)}
+              >
+                <MaterialCommunityIcons name="playlist-plus" size={20} color={Brand.accent} />
+                <Text style={styles.playlistBtnText}>Playlist</Text>
+              </Pressable>
+            )}
 
-          {canAddToPlaylist && (
-            <Pressable
-              style={({ pressed }) => [styles.playlistBtn, pressed && { opacity: 0.7 }]}
-              onPress={() => setShowPlaylistSheet(true)}
-            >
-              <MaterialCommunityIcons name="playlist-plus" size={20} color={Brand.accent} />
-              <Text style={styles.playlistBtnText}>Playlist</Text>
-            </Pressable>
-          )}
-        </ReAnimated.View>
+            {canRequestUse && (
+              <Pressable
+                style={({ pressed }) => [styles.playlistBtn, pressed && { opacity: 0.7 }]}
+                onPress={() => setShowRequestModal(true)}
+              >
+                <MaterialCommunityIcons name="file-document-edit-outline" size={20} color={Brand.accent} />
+                <Text style={styles.playlistBtnText}>Solicitar Uso</Text>
+              </Pressable>
+            )}
+          </ReAnimated.View>
+        )}
 
         {/* Lyric */}
         {!!track.lyric && (
@@ -249,6 +270,14 @@ export function TrackDetailScreen() {
           visible={showPlaylistSheet}
           track={track}
           onClose={() => setShowPlaylistSheet(false)}
+        />
+      )}
+
+      {canRequestUse && (
+        <RequestUseModal
+          visible={showRequestModal}
+          track={track}
+          onClose={() => setShowRequestModal(false)}
         />
       )}
     </>
@@ -328,6 +357,10 @@ const styles = StyleSheet.create({
   coverWrapper: {
     alignItems: 'center',
     marginBottom: 24,
+  },
+  coverBox: {
+    width: 260,
+    height: 260,
     position: 'relative',
   },
   cover: {
@@ -343,8 +376,7 @@ const styles = StyleSheet.create({
   availabilityDot: {
     position: 'absolute',
     bottom: 8,
-    right: '50%',
-    marginRight: -138,
+    right: 8,
     width: 12,
     height: 12,
     borderRadius: 6,
@@ -353,6 +385,32 @@ const styles = StyleSheet.create({
   },
   dotActive: { backgroundColor: '#4ade80' },
   dotInactive: { backgroundColor: 'rgba(255,255,255,0.3)' },
+  playFab: {
+    position: 'absolute',
+    bottom: -14,
+    left: -14,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: Brand.primaryDark,
+    // @ts-ignore
+    experimental_backgroundImage: `linear-gradient(135deg, ${Brand.primaryDark}, ${Brand.accent})`,
+    borderWidth: 3,
+    borderColor: '#080B12',
+    shadowColor: Brand.primary,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.5,
+    shadowRadius: 12,
+    elevation: 10,
+  },
+  playFabDisabled: {
+    opacity: 0.4,
+  },
+  playFabIconOffset: {
+    marginLeft: 3,
+  },
 
   /* Meta */
   meta: {
@@ -425,32 +483,8 @@ const styles = StyleSheet.create({
     gap: 10,
     marginBottom: 24,
   },
-  playBtn: {
-    flex: 1,
-    height: 52,
-    borderRadius: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    backgroundColor: Brand.primaryDark,
-    // @ts-ignore
-    experimental_backgroundImage: `linear-gradient(90deg, ${Brand.primaryDark}, ${Brand.accent})`,
-    shadowColor: Brand.primary,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.4,
-    shadowRadius: 14,
-    elevation: 8,
-  },
-  btnDisabled: {
-    opacity: 0.4,
-  },
-  playBtnText: {
-    ...Typography.label,
-    color: '#FFFFFF',
-    fontWeight: '700',
-  },
   playlistBtn: {
+    flex: 1,
     height: 52,
     borderRadius: 16,
     flexDirection: 'row',

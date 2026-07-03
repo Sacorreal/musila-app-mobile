@@ -1,6 +1,7 @@
 import { Image } from 'expo-image';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Typography } from '@/constants/theme';
+import { resolveGenreName } from '@/domains/tracks/utils/resolveGenreName';
 import type { SearchResult } from '../types/search.types';
 
 interface SearchResultItemProps {
@@ -17,6 +18,8 @@ export function SearchResultItem({ result, onPress }: SearchResultItemProps) {
         .map((a) => (typeof a === 'string' ? a : `${a.name} ${a.lastName}`))
         .join(', ')
     : '';
+
+  const genreName = resolveGenreName(result.genre);
 
   return (
     <Pressable
@@ -37,9 +40,9 @@ export function SearchResultItem({ result, onPress }: SearchResultItemProps) {
             {authorLabel}
           </Text>
         )}
-        {!!result.genre && (
+        {!!genreName && (
           <Text style={styles.genre} numberOfLines={1}>
-            {result.genre}
+            {genreName}
           </Text>
         )}
       </View>

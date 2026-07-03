@@ -1,4 +1,5 @@
 import { UserRole } from '@/domains/users/types/users.types';
+import type { TracksResponseDto } from '@/domains/tracks/types/tracks.types';
 
 export interface ArtistDto {
   id: string;
@@ -14,4 +15,5 @@ export interface ArtistDto {
   isUserFree: boolean;
   createdAt: string;
   updatedAt: string;
+  tracks?: TracksResponseDto[];
 }

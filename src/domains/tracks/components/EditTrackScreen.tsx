@@ -16,6 +16,7 @@ import Toast from 'react-native-toast-message';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Brand, Typography } from '@/constants/theme';
 import { useTrackById, useUpdateTrack } from '@/domains/tracks/hooks/use-tracks.hooks';
+import { resolveGenreName } from '@/domains/tracks/utils/resolveGenreName';
 import { GenreSelectorMobile } from '@/domains/musical-genre/components/GenreSelectorMobile';
 import { FormInput } from '@/shared/components/ui/FormInput';
 import { FormToggle } from '@/shared/components/ui/FormToggle';
@@ -144,8 +145,8 @@ export function EditTrackScreen() {
               onChange={(id) => setGenreId(id)}
               error={errors.genreId}
             />
-            {!genreId && track?.genre && (
-              <Text style={styles.currentValue}>Actual: {track.genre}</Text>
+            {!genreId && !!track?.genre && (
+              <Text style={styles.currentValue}>Actual: {resolveGenreName(track.genre)}</Text>
             )}
           </View>
 

@@ -1,6 +1,11 @@
 import { api } from '@/shared/libs/api';
 import { apiURLs } from '@/shared/constants/urls';
-import type { PaginatedRequestsResponse, RequestStatus, TrackRequest } from '../types/requests.types';
+import type {
+  CreateRequestedTrackInput,
+  PaginatedRequestsResponse,
+  RequestStatus,
+  TrackRequest,
+} from '../types/requests.types';
 
 export const requestsService = {
   async getRequests(): Promise<TrackRequest[]> {
@@ -15,6 +20,11 @@ export const requestsService = {
 
   async updateStatus(id: string, status: RequestStatus): Promise<TrackRequest> {
     const { data } = await api.put<TrackRequest>(apiURLs.requestedTracks.byId(id), { status });
+    return data;
+  },
+
+  async createRequestedTrack(input: CreateRequestedTrackInput): Promise<TrackRequest> {
+    const { data } = await api.post<TrackRequest>(apiURLs.requestedTracks.base, input);
     return data;
   },
 };

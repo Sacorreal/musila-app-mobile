@@ -14,7 +14,7 @@ export function ArtistsRow({ onArtistPress }: ArtistsRowProps) {
   if (isLoading) {
     return (
       <View>
-        <Text style={styles.sectionTitle}>Artistas</Text>
+        <Text style={styles.sectionTitle}>Compositores Destacados</Text>
         <ActivityIndicator color={Brand.primary} style={styles.loader} />
       </View>
     );
@@ -24,7 +24,7 @@ export function ArtistsRow({ onArtistPress }: ArtistsRowProps) {
 
   return (
     <View>
-      <Text style={styles.sectionTitle}>Artistas</Text>
+      <Text style={styles.sectionTitle}>Compositores Destacados</Text>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}

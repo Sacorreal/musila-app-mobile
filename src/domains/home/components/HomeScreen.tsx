@@ -11,6 +11,8 @@ import { FeaturedTracksList } from '@/domains/tracks/components/FeaturedTracksLi
 import { GenreRow } from '@/domains/musical-genre/components/GenreRow';
 import { ArtistsRow } from '@/domains/artists/components/ArtistsRow';
 import type { TracksResponseDto } from '@/domains/tracks/types/tracks.types';
+import type { MusicalGenreDto } from '@/domains/musical-genre/types/musical-genre.types';
+import type { ArtistDto } from '@/domains/artists/types/artists.types';
 
 export function HomeScreen() {
   const insets = useSafeAreaInsets();
@@ -24,6 +26,20 @@ export function HomeScreen() {
   const handleTrackPress = useCallback(
     (track: TracksResponseDto) => {
       router.push({ pathname: '/tracks/[id]', params: { id: track.id } });
+    },
+    [router],
+  );
+
+  const handleGenrePress = useCallback(
+    (genre: MusicalGenreDto) => {
+      router.push({ pathname: '/tracks/genero/[id]', params: { id: genre.id, name: genre.genre } });
+    },
+    [router],
+  );
+
+  const handleArtistPress = useCallback(
+    (artist: ArtistDto) => {
+      router.push({ pathname: '/artists/[id]', params: { id: artist.id } });
     },
     [router],
   );
@@ -52,13 +68,13 @@ export function HomeScreen() {
 
       {!isAuthor && (
         <ReAnimated.View entering={FadeInDown.delay(isCantautor ? 240 : 120).springify()} style={styles.section}>
-          <GenreRow />
+          <GenreRow onGenrePress={handleGenrePress} />
         </ReAnimated.View>
       )}
 
       {!isAuthor && (
         <ReAnimated.View entering={FadeInDown.delay(isCantautor ? 360 : 240).springify()} style={styles.section}>
-          <ArtistsRow />
+          <ArtistsRow onArtistPress={handleArtistPress} />
         </ReAnimated.View>
       )}
 
@@ -113,7 +129,7 @@ const styles = StyleSheet.create({
     color: 'rgba(255,255,255,0.4)',
   },
   section: {
-    marginTop: 8,
+    marginTop: 28,
     marginBottom: 8,
   },
 });

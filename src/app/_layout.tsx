@@ -43,6 +43,7 @@ export default function RootLayout() {
               <Stack.Screen name="(auth)" options={{ headerShown: false }} />
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
               <Stack.Screen name="tracks" options={{ headerShown: false }} />
+              <Stack.Screen name="artists" options={{ headerShown: false }} />
             </Stack>
           </AuthGate>
           <StatusBar style="auto" />
