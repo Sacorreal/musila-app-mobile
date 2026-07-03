@@ -9,8 +9,6 @@ import { UserRole } from '@/domains/users/types/users.types';
 import { usePlaylists } from '@/domains/playlists/hooks/use-playlists.hooks';
 import { PlaylistCard } from '@/domains/playlists/components/PlaylistCard';
 import { CreatePlaylistModal } from '@/domains/playlists/components/CreatePlaylistModal';
-import { useMyTracks } from '@/domains/tracks/hooks/use-tracks.hooks';
-import { TrackCard } from '@/domains/tracks/components/TrackCard';
 import type { Playlist } from '@/domains/playlists/types/playlists.types';
 
 export function MyMusicScreen() {
@@ -19,7 +17,6 @@ export function MyMusicScreen() {
   const [showCreateModal, setShowCreateModal] = useState(false);
 
   const { data: playlists = [], isLoading: loadingPlaylists } = usePlaylists();
-  const { data: myTracks = [], isLoading: loadingTracks } = useMyTracks();
 
   const canCreatePlaylist = user?.role !== UserRole.INVITADO;
 
@@ -66,25 +63,6 @@ export function MyMusicScreen() {
             )}
             scrollEnabled={false}
             columnWrapperStyle={styles.gridRow}
-          />
-        )}
-      </ReAnimated.View>
-
-      <ReAnimated.View entering={FadeInDown.delay(240).springify()} style={styles.tracksSection}>
-        <Text style={styles.sectionTitle}>Mis Canciones</Text>
-        {loadingTracks ? (
-          <ActivityIndicator color={Brand.primary} style={styles.loader} />
-        ) : myTracks.length === 0 ? (
-          <View style={styles.emptySection}>
-            <Text style={styles.emptyIcon}>🎶</Text>
-            <Text style={styles.emptyText}>Sin canciones guardadas</Text>
-          </View>
-        ) : (
-          <FlatList
-            data={myTracks}
-            keyExtractor={(t) => t.id}
-            renderItem={({ item }) => <TrackCard track={item} />}
-            scrollEnabled={false}
           />
         )}
       </ReAnimated.View>
@@ -171,8 +149,5 @@ const styles = StyleSheet.create({
   },
   gridRow: {
     marginBottom: 2,
-  },
-  tracksSection: {
-    marginTop: 16,
   },
 });

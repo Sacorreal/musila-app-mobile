@@ -1,7 +1,7 @@
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Brand, Typography } from '@/constants/theme';
 import { useGenreById } from '@/domains/musical-genre/hooks/use-musical-genre.hooks';
@@ -9,13 +9,15 @@ import { SearchBar } from '@/domains/search/components/SearchBar';
 import { useLanguages } from '../hooks/use-tracks.hooks';
 import { GenreTracksFilterModal } from './GenreTracksFilterModal';
 import { TrackCard } from './TrackCard';
+import { sortByNewest } from '../utils/sortTracks';
 import type { TracksResponseDto } from '../types/tracks.types';
+import { HomeButton } from '@/shared/components/ui/HomeButton';
 
 export function GenreTracksScreen() {
   const { id, name } = useLocalSearchParams<{ id: string; name?: string }>();
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { data: genre, isLoading, isError, refetch } = useGenreById(id ?? '');
+  const { data: genre, isLoading, isError, isRefetching, refetch } = useGenreById(id ?? '');
   const { data: allLanguages = [] } = useLanguages();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -32,7 +34,10 @@ export function GenreTracksScreen() {
   );
 
   const title = genre?.genre ?? name ?? 'Género';
-  const tracks = useMemo(() => genre?.tracks ?? [], [genre]);
+  const tracks = useMemo(
+    () => sortByNewest((genre?.tracks ?? []).filter((track) => track.isAvailable)),
+    [genre],
+  );
 
   const subGenreOptions = useMemo(
     () => Array.from(new Set(genre?.subGenre ?? [])).sort(),
@@ -90,6 +95,9 @@ export function GenreTracksScreen() {
         >
           <MaterialCommunityIcons name="arrow-left" size={22} color="#FFFFFF" />
         </Pressable>
+        <View style={{ position: 'absolute', top: insets.top + 12, right: 20 }}>
+          <HomeButton />
+        </View>
         <MaterialCommunityIcons name="alert-circle-outline" size={48} color="rgba(255,255,255,0.2)" />
         <Text style={styles.errorTitle}>No se pudo cargar el género</Text>
         <Pressable style={styles.retryBtn} onPress={() => refetch()}>
@@ -125,6 +133,7 @@ export function GenreTracksScreen() {
             {hasActiveFilters && <View style={styles.filterDot} />}
           </Pressable>
         )}
+        <HomeButton />
       </View>
 
       {tracks.length > 0 && (
@@ -137,28 +146,32 @@ export function GenreTracksScreen() {
         {filteredTracks.length} {filteredTracks.length === 1 ? 'canción' : 'canciones'}
       </Text>
 
-      {tracks.length === 0 ? (
-        <View style={styles.empty}>
-          <Text style={styles.emptyIcon}>🎵</Text>
-          <Text style={styles.emptyTitle}>Sin canciones en este género todavía</Text>
-        </View>
-      ) : filteredTracks.length === 0 ? (
-        <View style={styles.empty}>
-          <Text style={styles.emptyIcon}>🔍</Text>
-          <Text style={styles.emptyTitle}>Sin resultados</Text>
-          <Text style={styles.emptySubtitle}>
-            Ninguna canción coincide con la búsqueda o los filtros seleccionados
-          </Text>
-        </View>
-      ) : (
-        <FlatList
-          data={filteredTracks}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <TrackCard track={item} onPress={handleTrackPress} />}
-          contentContainerStyle={styles.listContent}
-          showsVerticalScrollIndicator={false}
-        />
-      )}
+      <FlatList
+        data={filteredTracks}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => <TrackCard track={item} onPress={handleTrackPress} />}
+        contentContainerStyle={styles.listContent}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={Brand.primary} colors={[Brand.primary]} />
+        }
+        ListEmptyComponent={
+          tracks.length === 0 ? (
+            <View style={styles.empty}>
+              <Text style={styles.emptyIcon}>🎵</Text>
+              <Text style={styles.emptyTitle}>Sin canciones en este género todavía</Text>
+            </View>
+          ) : (
+            <View style={styles.empty}>
+              <Text style={styles.emptyIcon}>🔍</Text>
+              <Text style={styles.emptyTitle}>Sin resultados</Text>
+              <Text style={styles.emptySubtitle}>
+                Ninguna canción coincide con la búsqueda o los filtros seleccionados
+              </Text>
+            </View>
+          )
+        }
+      />
 
       <GenreTracksFilterModal
         visible={filterModalVisible}

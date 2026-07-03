@@ -20,6 +20,7 @@ import { resolveGenreName } from '@/domains/tracks/utils/resolveGenreName';
 import { GenreSelectorMobile } from '@/domains/musical-genre/components/GenreSelectorMobile';
 import { FormInput } from '@/shared/components/ui/FormInput';
 import { FormToggle } from '@/shared/components/ui/FormToggle';
+import { HomeButton } from '@/shared/components/ui/HomeButton';
 
 type FieldErrors = Partial<Record<string, string>>;
 
@@ -123,10 +124,11 @@ export function EditTrackScreen() {
           >
             <MaterialCommunityIcons name="arrow-left" size={22} color="#FFFFFF" />
           </Pressable>
-          <View>
+          <View style={styles.titleWrapper}>
             <Text style={styles.title}>Editar canción</Text>
             <Text style={styles.subtitle}>Actualiza la información del track</Text>
           </View>
+          <HomeButton />
         </ReAnimated.View>
 
         <ReAnimated.View entering={FadeInDown.delay(80).springify()}>
@@ -238,6 +240,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: 14,
+  },
+  titleWrapper: {
+    flex: 1,
   },
   backBtn: {
     width: 38,

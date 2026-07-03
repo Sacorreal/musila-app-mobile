@@ -26,7 +26,7 @@ export const playlistsService = {
     const current = await playlistsService.getPlaylistById(playlistId);
     const existingIds = (current.tracks ?? []).map((t) => t.id);
     if (existingIds.includes(trackId)) return current;
-    const { data } = await api.patch<Playlist>(apiURLs.playlists.byId(playlistId), {
+    const { data } = await api.put<Playlist>(apiURLs.playlists.byId(playlistId), {
       trackIds: [...existingIds, trackId],
     });
     return data;

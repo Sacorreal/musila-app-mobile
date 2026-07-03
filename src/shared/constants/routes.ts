@@ -26,7 +26,7 @@ export const tabsByRoles: MenuRoute[] = [
     title: "Solicitudes",
     icon: "format-list-checks",
     name: "request",
-    rolAccess: [UserRole.AUTOR, UserRole.EDITOR, UserRole.CANTAUTOR],
+    rolAccess: [UserRole.AUTOR, UserRole.EDITOR, UserRole.CANTAUTOR, UserRole.INTERPRETE],
   },
   {
     title: "Publicar",

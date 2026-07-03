@@ -1,10 +1,22 @@
-import { ActivityIndicator, FlatList, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import {
+  ActivityIndicator,
+  FlatList,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import ReAnimated, { FadeIn, SlideInDown, SlideOutDown } from 'react-native-reanimated';
 import { Image } from 'expo-image';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Toast from 'react-native-toast-message';
 import { Brand, Typography } from '@/constants/theme';
 import { usePlaylists, useAddTrackToPlaylist } from '@/domains/playlists/hooks/use-playlists.hooks';
+import { CreatePlaylistForm } from '@/domains/playlists/components/CreatePlaylistForm';
 import type { Playlist } from '@/domains/playlists/types/playlists.types';
 import type { TracksResponseDto } from '../types/tracks.types';
 
@@ -19,6 +31,7 @@ interface AddToPlaylistBottomSheetProps {
 export function AddToPlaylistBottomSheet({ visible, track, onClose }: AddToPlaylistBottomSheetProps) {
   const { data: playlists = [], isLoading } = usePlaylists();
   const addToPlaylist = useAddTrackToPlaylist();
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
   const handleSelect = async (playlist: Playlist) => {
     try {
@@ -30,10 +43,24 @@ export function AddToPlaylistBottomSheet({ visible, track, onClose }: AddToPlayl
     }
   };
 
+  const handlePlaylistCreated = (playlist: Playlist) => {
+    setShowCreateModal(false);
+    handleSelect(playlist);
+  };
+
+  const handleClose = () => {
+    setShowCreateModal(false);
+    onClose();
+  };
+
   return (
-    <Modal visible={visible} transparent animationType="none" onRequestClose={onClose}>
+    <Modal visible={visible} transparent animationType="none" onRequestClose={handleClose}>
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
       <ReAnimated.View entering={FadeIn.duration(180)} style={styles.backdrop}>
-        <Pressable style={styles.backdropPress} onPress={onClose} />
+        <Pressable style={styles.backdropPress} onPress={handleClose} />
         <ReAnimated.View
           entering={SlideInDown.springify().damping(20)}
           exiting={SlideOutDown.duration(220)}
@@ -42,8 +69,15 @@ export function AddToPlaylistBottomSheet({ visible, track, onClose }: AddToPlayl
           <View style={styles.handle} />
 
           <View style={styles.sheetHeader}>
-            <Text style={styles.sheetTitle}>Agregar a playlist</Text>
-            <Pressable onPress={onClose} hitSlop={12}>
+            {showCreateModal ? (
+              <Pressable onPress={() => setShowCreateModal(false)} hitSlop={12} style={styles.backRow}>
+                <MaterialCommunityIcons name="arrow-left" size={20} color="rgba(255,255,255,0.6)" />
+                <Text style={styles.sheetTitle}>Nueva playlist</Text>
+              </Pressable>
+            ) : (
+              <Text style={styles.sheetTitle}>Agregar a playlist</Text>
+            )}
+            <Pressable onPress={handleClose} hitSlop={12}>
               <MaterialCommunityIcons name="close" size={22} color="rgba(255,255,255,0.4)" />
             </Pressable>
           </View>
@@ -52,7 +86,12 @@ export function AddToPlaylistBottomSheet({ visible, track, onClose }: AddToPlayl
             "{track.title}"
           </Text>
 
-          {isLoading ? (
+          {showCreateModal ? (
+            <CreatePlaylistForm
+              onClose={() => setShowCreateModal(false)}
+              onCreated={handlePlaylistCreated}
+            />
+          ) : isLoading ? (
             <View style={styles.center}>
               <ActivityIndicator color={Brand.primary} />
             </View>
@@ -60,6 +99,13 @@ export function AddToPlaylistBottomSheet({ visible, track, onClose }: AddToPlayl
             <View style={styles.empty}>
               <MaterialCommunityIcons name="playlist-music-outline" size={36} color="rgba(255,255,255,0.2)" />
               <Text style={styles.emptyText}>No tienes playlists aún</Text>
+              <Pressable
+                style={({ pressed }) => [styles.createBtn, pressed && { opacity: 0.8 }]}
+                onPress={() => setShowCreateModal(true)}
+              >
+                <MaterialCommunityIcons name="plus" size={18} color="#FFFFFF" />
+                <Text style={styles.createBtnText}>Crear playlist</Text>
+              </Pressable>
             </View>
           ) : (
             <FlatList
@@ -95,11 +141,15 @@ export function AddToPlaylistBottomSheet({ visible, track, onClose }: AddToPlayl
           )}
         </ReAnimated.View>
       </ReAnimated.View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }
 
 const styles = StyleSheet.create({
+  flex: {
+    flex: 1,
+  },
   backdrop: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.6)',
@@ -138,6 +188,11 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontWeight: '700',
   },
+  backRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
   trackLabel: {
     ...Typography.caption,
     color: 'rgba(255,255,255,0.4)',
@@ -156,6 +211,26 @@ const styles = StyleSheet.create({
   emptyText: {
     ...Typography.body,
     color: 'rgba(255,255,255,0.3)',
+  },
+  createBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 8,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 14,
+    backgroundColor: Brand.primaryDark,
+    shadowColor: Brand.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 10,
+    elevation: 6,
+  },
+  createBtnText: {
+    ...Typography.label,
+    color: '#FFFFFF',
+    fontWeight: '700',
   },
   listContent: {
     gap: 4,

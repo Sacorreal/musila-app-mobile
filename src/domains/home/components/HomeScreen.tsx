@@ -1,7 +1,8 @@
-import { useCallback } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useCallback, useState } from 'react';
+import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import ReAnimated, { FadeInDown } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
+import { useQueryClient } from '@tanstack/react-query';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Brand, Typography } from '@/constants/theme';
 import { useAuthStore } from '@/domains/auth/store/useAuthStore';
@@ -17,11 +18,23 @@ import type { ArtistDto } from '@/domains/artists/types/artists.types';
 export function HomeScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const queryClient = useQueryClient();
   const user = useAuthStore((s) => s.user);
   const role = user?.role;
+  const [refreshing, setRefreshing] = useState(false);
 
   const isAuthor = role === UserRole.AUTOR;
   const isCantautor = role === UserRole.CANTAUTOR;
+
+  const handleRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ['musical-genres'] }),
+      queryClient.invalidateQueries({ queryKey: ['artists'] }),
+      queryClient.invalidateQueries({ queryKey: ['tracks'] }),
+    ]);
+    setRefreshing(false);
+  }, [queryClient]);
 
   const handleTrackPress = useCallback(
     (track: TracksResponseDto) => {
@@ -49,6 +62,9 @@ export function HomeScreen() {
       style={[styles.container, { paddingTop: insets.top }]}
       contentContainerStyle={styles.content}
       showsVerticalScrollIndicator={false}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={Brand.primary} colors={[Brand.primary]} />
+      }
     >
       <View style={styles.bgOrb1} pointerEvents="none" />
       <View style={styles.bgOrb2} pointerEvents="none" />

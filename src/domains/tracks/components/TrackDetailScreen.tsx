@@ -23,6 +23,7 @@ import { TrackRequestsSection } from './TrackRequestsSection';
 import { AddToPlaylistBottomSheet } from './AddToPlaylistBottomSheet';
 import { RequestUseModal } from './RequestUseModal';
 import { resolveGenreName } from '../utils/resolveGenreName';
+import { HomeButton } from '@/shared/components/ui/HomeButton';
 
 const COVER_PLACEHOLDER = require('@/assets/images/icon.png');
 
@@ -99,6 +100,9 @@ export function TrackDetailScreen() {
         >
           <MaterialCommunityIcons name="arrow-left" size={22} color="#FFFFFF" />
         </Pressable>
+        <View style={{ position: 'absolute', top: insets.top + 12, right: 20 }}>
+          <HomeButton />
+        </View>
         <MaterialCommunityIcons name="alert-circle-outline" size={48} color="rgba(255,255,255,0.2)" />
         <Text style={styles.errorTitle}>No se pudo cargar el track</Text>
         <Pressable style={styles.retryBtn} onPress={() => refetch()}>
@@ -148,6 +152,7 @@ export function TrackDetailScreen() {
               <MaterialCommunityIcons name="pencil-outline" size={20} color={Brand.accent} />
             </Pressable>
           )}
+          <HomeButton />
         </ReAnimated.View>
 
         {/* Cover */}

@@ -2,11 +2,13 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Brand, Typography } from '@/constants/theme';
 import { TrackCard } from '@/domains/tracks/components/TrackCard';
+import { sortByNewest } from '@/domains/tracks/utils/sortTracks';
 import type { TracksResponseDto } from '@/domains/tracks/types/tracks.types';
+import { HomeButton } from '@/shared/components/ui/HomeButton';
 import { useArtistById } from '../hooks/use-artists.hooks';
 
 const AVATAR_SIZE = 96;
@@ -15,7 +17,7 @@ export function ArtistProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { data: artist, isLoading, isError, refetch } = useArtistById(id ?? '');
+  const { data: artist, isLoading, isError, isRefetching, refetch } = useArtistById(id ?? '');
 
   const handleTrackPress = useCallback(
     (track: TracksResponseDto) => {
@@ -42,6 +44,9 @@ export function ArtistProfileScreen() {
         >
           <MaterialCommunityIcons name="arrow-left" size={22} color="#FFFFFF" />
         </Pressable>
+        <View style={{ position: 'absolute', top: insets.top + 12, right: 20 }}>
+          <HomeButton />
+        </View>
         <MaterialCommunityIcons name="alert-circle-outline" size={48} color="rgba(255,255,255,0.2)" />
         <Text style={styles.errorTitle}>No se pudo cargar el compositor</Text>
         <Pressable style={styles.retryBtn} onPress={() => refetch()}>
@@ -53,13 +58,16 @@ export function ArtistProfileScreen() {
 
   const fullName = `${artist.name} ${artist.lastName}`.trim();
   const initials = `${artist.name?.[0] ?? ''}${artist.lastName?.[0] ?? ''}`.toUpperCase();
-  const tracks = artist.tracks ?? [];
+  const tracks = sortByNewest((artist.tracks ?? []).filter((track) => track.isAvailable));
 
   return (
     <ScrollView
       style={[styles.container, { paddingTop: insets.top }]}
       contentContainerStyle={styles.content}
       showsVerticalScrollIndicator={false}
+      refreshControl={
+        <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={Brand.primary} colors={[Brand.primary]} />
+      }
     >
       <View style={styles.header}>
         <Pressable
@@ -69,6 +77,7 @@ export function ArtistProfileScreen() {
         >
           <MaterialCommunityIcons name="arrow-left" size={22} color="#FFFFFF" />
         </Pressable>
+        <HomeButton />
       </View>
 
       <View style={styles.hero}>
@@ -135,6 +144,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     paddingTop: 16,
     paddingBottom: 8,
   },

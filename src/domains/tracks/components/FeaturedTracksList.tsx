@@ -4,6 +4,7 @@ import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from '
 import { Brand, Typography } from '@/constants/theme';
 import { useFeaturedTracks } from '../hooks/use-tracks.hooks';
 import { FeaturedTrackCard } from './FeaturedTrackCard';
+import { sortByNewest } from '../utils/sortTracks';
 import type { TracksResponseDto } from '../types/tracks.types';
 
 interface FeaturedTracksListProps {
@@ -24,9 +25,11 @@ export function FeaturedTracksList({ onTrackPress }: FeaturedTracksListProps) {
     );
   }
 
-  if (tracks.length === 0) return null;
+  const availableTracks = sortByNewest(tracks.filter((track) => track.isAvailable));
 
-  const visibleTracks = tracks.slice(0, MAX_FEATURED_TRACKS);
+  if (availableTracks.length === 0) return null;
+
+  const visibleTracks = availableTracks.slice(0, MAX_FEATURED_TRACKS);
 
   return (
     <View>

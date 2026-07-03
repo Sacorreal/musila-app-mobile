@@ -44,6 +44,7 @@ export function useAddTrackToPlaylist() {
       playlistsService.addTrack(playlistId, trackId),
     onSuccess: (_, vars) => {
       qc.invalidateQueries({ queryKey: ['playlists', vars.playlistId] });
+      qc.invalidateQueries({ queryKey: ['playlists'] });
     },
   });
 }

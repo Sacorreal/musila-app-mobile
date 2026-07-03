@@ -3,6 +3,7 @@ import {
   FlatList,
   KeyboardAvoidingView,
   Platform,
+  RefreshControl,
   StyleSheet,
   Text,
   View,
@@ -14,19 +15,21 @@ import { useSearch } from '@/domains/search/hooks/use-search.hooks';
 import { SearchBar } from '@/domains/search/components/SearchBar';
 import { SearchResultItem } from '@/domains/search/components/SearchResultItem';
 import { SearchEmptyState } from '@/domains/search/components/SearchEmptyState';
+import { sortByNewest } from '@/domains/tracks/utils/sortTracks';
 import type { SearchResult } from '@/domains/search/types/search.types';
 
 export function SearchScreen() {
   const insets = useSafeAreaInsets();
   const [query, setQuery] = useState('');
 
-  const { data: results = [], isLoading, isFetching } = useSearch(query);
+  const { data: results = [], isLoading, isRefetching, refetch } = useSearch(query);
+  const availableResults = sortByNewest(results.filter((result) => result.isAvailable));
 
   const handleResultPress = (_result: SearchResult) => {
     // Navegación futura al detalle de la canción
   };
 
-  const showLoading = (isLoading || isFetching) && query.length >= 2;
+  const showLoading = isLoading && query.length >= 2;
 
   return (
     <KeyboardAvoidingView
@@ -45,9 +48,9 @@ export function SearchScreen() {
           <SearchBar onQueryChange={setQuery} />
         </View>
 
-        {query.length >= 2 && !showLoading && results.length > 0 && (
+        {query.length >= 2 && !showLoading && availableResults.length > 0 && (
           <Text style={styles.resultsCount}>
-            {results.length} {results.length === 1 ? 'resultado' : 'resultados'}
+            {availableResults.length} {availableResults.length === 1 ? 'resultado' : 'resultados'}
           </Text>
         )}
 
@@ -59,7 +62,7 @@ export function SearchScreen() {
 
         {!showLoading && (
           <FlatList
-            data={results}
+            data={availableResults}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
               <SearchResultItem result={item} onPress={handleResultPress} />
@@ -68,6 +71,16 @@ export function SearchScreen() {
             ListEmptyComponent={<SearchEmptyState hasQuery={query.length >= 2} />}
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl
+                refreshing={isRefetching}
+                onRefresh={() => {
+                  if (query.trim().length >= 2) refetch();
+                }}
+                tintColor={Brand.primary}
+                colors={[Brand.primary]}
+              />
+            }
           />
         )}
       </View>
