@@ -12,11 +12,14 @@ import { TrackCard } from './TrackCard';
 import { sortByNewest } from '../utils/sortTracks';
 import type { TracksResponseDto } from '../types/tracks.types';
 import { HomeButton } from '@/shared/components/ui/HomeButton';
+import { useMiniPlayerSpacing } from '@/domains/player/hooks/use-mini-player-spacing';
+import { playTracks } from '@/domains/player/utils/playQueue';
 
 export function GenreTracksScreen() {
   const { id, name } = useLocalSearchParams<{ id: string; name?: string }>();
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const miniPlayerSpacing = useMiniPlayerSpacing();
   const { data: genre, isLoading, isError, isRefetching, refetch } = useGenreById(id ?? '');
   const { data: allLanguages = [] } = useLanguages();
 
@@ -64,6 +67,10 @@ export function GenreTracksScreen() {
   }, [tracks, searchQuery, selectedSubGenres, language, isGospel]);
 
   const hasActiveFilters = selectedSubGenres.length > 0 || language !== 'all' || isGospel;
+
+  const handlePlayAll = useCallback(() => {
+    playTracks(filteredTracks, 0);
+  }, [filteredTracks]);
 
   const handleToggleSubGenre = (value: string) => {
     setSelectedSubGenres((prev) =>
@@ -142,15 +149,28 @@ export function GenreTracksScreen() {
         </View>
       )}
 
-      <Text style={styles.subtitle}>
-        {filteredTracks.length} {filteredTracks.length === 1 ? 'canción' : 'canciones'}
-      </Text>
+      <View style={styles.subtitleRow}>
+        <Text style={styles.subtitle}>
+          {filteredTracks.length} {filteredTracks.length === 1 ? 'canción' : 'canciones'}
+        </Text>
+        {filteredTracks.length > 0 && (
+          <Pressable
+            style={({ pressed }) => [styles.playAllBtn, pressed && { opacity: 0.7 }]}
+            onPress={handlePlayAll}
+            accessibilityRole="button"
+            accessibilityLabel="Reproducir todas las canciones"
+          >
+            <MaterialCommunityIcons name="play" size={14} color="#FFFFFF" style={styles.playAllIconOffset} />
+            <Text style={styles.playAllBtnText}>Reproducir todo</Text>
+          </Pressable>
+        )}
+      </View>
 
       <FlatList
         data={filteredTracks}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => <TrackCard track={item} onPress={handleTrackPress} />}
-        contentContainerStyle={styles.listContent}
+        contentContainerStyle={[styles.listContent, { paddingBottom: 40 + miniPlayerSpacing }]}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={Brand.primary} colors={[Brand.primary]} />
@@ -254,10 +274,32 @@ const styles = StyleSheet.create({
   searchWrapper: {
     marginBottom: 12,
   },
+  subtitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
   subtitle: {
     ...Typography.caption,
     color: 'rgba(255,255,255,0.4)',
-    marginBottom: 16,
+  },
+  playAllBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    backgroundColor: Brand.primaryDark,
+  },
+  playAllIconOffset: {
+    marginLeft: -1,
+  },
+  playAllBtnText: {
+    ...Typography.caption,
+    color: '#FFFFFF',
+    fontWeight: '700',
   },
   listContent: {
     paddingBottom: 40,

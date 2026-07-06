@@ -17,9 +17,11 @@ import { SearchResultItem } from '@/domains/search/components/SearchResultItem';
 import { SearchEmptyState } from '@/domains/search/components/SearchEmptyState';
 import { sortByNewest } from '@/domains/tracks/utils/sortTracks';
 import type { SearchResult } from '@/domains/search/types/search.types';
+import { useMiniPlayerSpacing } from '@/domains/player/hooks/use-mini-player-spacing';
 
 export function SearchScreen() {
   const insets = useSafeAreaInsets();
+  const miniPlayerSpacing = useMiniPlayerSpacing();
   const [query, setQuery] = useState('');
 
   const { data: results = [], isLoading, isRefetching, refetch } = useSearch(query);
@@ -67,7 +69,7 @@ export function SearchScreen() {
             renderItem={({ item }) => (
               <SearchResultItem result={item} onPress={handleResultPress} />
             )}
-            contentContainerStyle={styles.listContent}
+            contentContainerStyle={[styles.listContent, { paddingBottom: 40 + miniPlayerSpacing }]}
             ListEmptyComponent={<SearchEmptyState hasQuery={query.length >= 2} />}
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}

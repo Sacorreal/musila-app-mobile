@@ -10,6 +10,7 @@ import { sortByNewest } from '@/domains/tracks/utils/sortTracks';
 import type { TracksResponseDto } from '@/domains/tracks/types/tracks.types';
 import { HomeButton } from '@/shared/components/ui/HomeButton';
 import { formatFullName } from '@/shared/utils/formatName';
+import { useMiniPlayerSpacing } from '@/domains/player/hooks/use-mini-player-spacing';
 import { useArtistById } from '../hooks/use-artists.hooks';
 
 const AVATAR_SIZE = 96;
@@ -18,6 +19,7 @@ export function ArtistProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const miniPlayerSpacing = useMiniPlayerSpacing();
   const { data: artist, isLoading, isError, isRefetching, refetch } = useArtistById(id ?? '');
 
   const handleTrackPress = useCallback(
@@ -64,7 +66,7 @@ export function ArtistProfileScreen() {
   return (
     <ScrollView
       style={[styles.container, { paddingTop: insets.top }]}
-      contentContainerStyle={styles.content}
+      contentContainerStyle={[styles.content, { paddingBottom: 60 + miniPlayerSpacing }]}
       showsVerticalScrollIndicator={false}
       refreshControl={
         <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={Brand.primary} colors={[Brand.primary]} />

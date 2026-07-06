@@ -28,11 +28,13 @@ import { LanguageSelectorMobile } from './LanguageSelectorMobile';
 import { AudioPickerField } from './AudioPickerField';
 import { CoverPickerField } from './CoverPickerField';
 import { IntellectualPropertyFormSection, type IPEntry } from './IntellectualPropertyFormSection';
+import { useMiniPlayerSpacing } from '@/domains/player/hooks/use-mini-player-spacing';
 
 type FieldErrors = Partial<Record<string, string>>;
 
 export function PublishTrackScreen() {
   const insets = useSafeAreaInsets();
+  const miniPlayerSpacing = useMiniPlayerSpacing();
   const user = useAuthStore((s) => s.user);
   const createTrack = useCreateTrack();
   const { uploadFiles, rollback, isUploading } = useUploadStorage();
@@ -176,7 +178,7 @@ export function PublishTrackScreen() {
     >
       <ScrollView
         style={[styles.container, { paddingTop: insets.top }]}
-        contentContainerStyle={styles.content}
+        contentContainerStyle={[styles.content, { paddingBottom: 60 + miniPlayerSpacing }]}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >

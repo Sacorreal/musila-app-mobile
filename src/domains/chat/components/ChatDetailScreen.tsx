@@ -26,6 +26,7 @@ import { chatSocketService } from '@/domains/chat/services/chat-socket.service';
 import { resolveMessageType, formatFileSize } from '@/domains/chat/utils/chatFile';
 import { MessageType, type IncomingMessagePayload, type Message } from '@/domains/chat/types/chat.types';
 import { useUploadStorage } from '@/domains/storage/hooks/use-upload-storage.hooks';
+import { useMiniPlayerSpacing } from '@/domains/player/hooks/use-mini-player-spacing';
 
 const MAX_FILE_SIZE_MB = 25;
 
@@ -40,6 +41,7 @@ interface PendingAttachment {
 
 export function ChatDetailScreen() {
   const insets = useSafeAreaInsets();
+  const miniPlayerSpacing = useMiniPlayerSpacing();
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const chatId = id ?? '';
@@ -323,7 +325,7 @@ export function ChatDetailScreen() {
           </View>
         )}
 
-        <View style={[styles.inputBar, { paddingBottom: insets.bottom + 8 }]}>
+        <View style={[styles.inputBar, { paddingBottom: insets.bottom + 8 + miniPlayerSpacing }]}>
           <Pressable style={styles.iconBtn} onPress={handlePickImage} disabled={isUploading} hitSlop={8}>
             <MaterialCommunityIcons name="image-outline" size={22} color="rgba(255,255,255,0.6)" />
           </Pressable>

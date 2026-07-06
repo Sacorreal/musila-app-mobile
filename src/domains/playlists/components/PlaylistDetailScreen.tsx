@@ -19,6 +19,7 @@ import { Brand, Typography } from '@/constants/theme';
 import { useAuthStore } from '@/domains/auth/store/useAuthStore';
 import { UserRole } from '@/domains/users/types/users.types';
 import { playTracks } from '@/domains/player/utils/playQueue';
+import { useMiniPlayerSpacing } from '@/domains/player/hooks/use-mini-player-spacing';
 import { HomeButton } from '@/shared/components/ui/HomeButton';
 import type { TracksResponseDto } from '@/domains/tracks/types/tracks.types';
 import {
@@ -40,6 +41,7 @@ export function PlaylistDetailScreen() {
   const insets = useSafeAreaInsets();
   const userId = useAuthStore((s) => s.user?.id);
   const role = useAuthStore((s) => s.user?.role);
+  const miniPlayerSpacing = useMiniPlayerSpacing();
 
   const { data: playlist, isLoading, isError, isRefetching, refetch } = usePlaylistById(id ?? '');
   const deletePlaylist = useDeletePlaylist();
@@ -166,7 +168,7 @@ export function PlaylistDetailScreen() {
     <View style={{ flex: 1 }}>
       <ScrollView
         style={[styles.container, { paddingTop: insets.top }]}
-        contentContainerStyle={styles.content}
+        contentContainerStyle={[styles.content, { paddingBottom: 60 + miniPlayerSpacing }]}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={Brand.primary} colors={[Brand.primary]} />

@@ -7,16 +7,18 @@ import { useAuthStore } from '@/domains/auth/store/useAuthStore';
 import { useConversations } from '@/domains/chat/hooks/use-chat.hooks';
 import { ConversationItem } from '@/domains/chat/components/ConversationItem';
 import type { TrackRequest } from '@/domains/requests/types/requests.types';
+import { useMiniPlayerSpacing } from '@/domains/player/hooks/use-mini-player-spacing';
 
 export function ConversationsScreen() {
   const insets = useSafeAreaInsets();
+  const miniPlayerSpacing = useMiniPlayerSpacing();
   const router = useRouter();
   const user = useAuthStore((s) => s.user);
   const { data: conversations = [], isLoading } = useConversations();
 
   const handleConversationPress = (request: TrackRequest) => {
     if (request.chat?.id) {
-      router.push(`/(tabs)/more/chat/${request.chat.id}` as any);
+      router.push(`/more/chat/${request.chat.id}` as any);
     }
   };
 
@@ -53,7 +55,7 @@ export function ConversationsScreen() {
                 onPress={handleConversationPress}
               />
             )}
-            contentContainerStyle={styles.listContent}
+            contentContainerStyle={[styles.listContent, { paddingBottom: 40 + miniPlayerSpacing }]}
             showsVerticalScrollIndicator={false}
           />
         </ReAnimated.View>

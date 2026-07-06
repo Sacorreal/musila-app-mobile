@@ -28,16 +28,4 @@ export const tabsByRoles: MenuRoute[] = [
     name: "request",
     rolAccess: [UserRole.AUTOR, UserRole.EDITOR, UserRole.CANTAUTOR, UserRole.INTERPRETE],
   },
-  {
-    title: "Publicar",
-    icon: "music-note-plus",
-    name: "publish",
-    rolAccess: [UserRole.AUTOR, UserRole.CANTAUTOR],
-  },
-  {
-    title: "Más",
-    icon: "plus-box",
-    name: "more",
-    rolAccess: ALL_ROLES,
-  },
 ];

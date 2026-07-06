@@ -18,6 +18,7 @@ import { UserRole } from '@/domains/users/types/users.types';
 import { useTrackById } from '@/domains/tracks/hooks/use-tracks.hooks';
 import { usePlayerStore } from '@/shared/stores/player.store';
 import { mapToPlayerTrack } from '@/domains/player/utils/mapToPlayerTrack';
+import { useMiniPlayerSpacing } from '@/domains/player/hooks/use-mini-player-spacing';
 import { IntellectualPropertySection } from './IntellectualPropertySection';
 import { TrackRequestsSection } from './TrackRequestsSection';
 import { AddToPlaylistBottomSheet } from './AddToPlaylistBottomSheet';
@@ -39,6 +40,7 @@ export function TrackDetailScreen() {
   const currentTrack = usePlayerStore((s) => s.currentTrack);
   const isPlaying = usePlayerStore((s) => s.isPlaying);
   const setPlaying = usePlayerStore((s) => s.setPlaying);
+  const miniPlayerSpacing = useMiniPlayerSpacing();
 
   const [showPlaylistSheet, setShowPlaylistSheet] = useState(false);
   const [showRequestModal, setShowRequestModal] = useState(false);
@@ -112,7 +114,7 @@ export function TrackDetailScreen() {
     <>
       <ScrollView
         style={[styles.container, { paddingTop: insets.top }]}
-        contentContainerStyle={styles.content}
+        contentContainerStyle={[styles.content, { paddingBottom: 60 + miniPlayerSpacing }]}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.bgOrb1} pointerEvents="none" />

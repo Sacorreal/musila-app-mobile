@@ -13,9 +13,11 @@ import { ApproveRequestModal } from '@/domains/requests/components/ApproveReques
 import { RequestsTabBar, TabKey } from '@/domains/requests/components/RequestsTabBar';
 import { RequestsFilterBar } from '@/domains/requests/components/RequestsFilterBar';
 import { getAvailableTabs } from '@/domains/requests/libs/requests.utils';
+import { useMiniPlayerSpacing } from '@/domains/player/hooks/use-mini-player-spacing';
 
 export function RequestsScreen() {
   const insets = useSafeAreaInsets();
+  const miniPlayerSpacing = useMiniPlayerSpacing();
   const user = useAuthStore((s) => s.user);
   const role = user?.role as UserRole | undefined;
 
@@ -143,7 +145,7 @@ export function RequestsScreen() {
               isProcessing={updateMutation.isPending}
             />
           )}
-          contentContainerStyle={styles.listContent}
+          contentContainerStyle={[styles.listContent, { paddingBottom: 40 + miniPlayerSpacing }]}
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
             <View style={styles.emptyState}>

@@ -21,6 +21,7 @@ import { GenreSelectorMobile } from '@/domains/musical-genre/components/GenreSel
 import { FormInput } from '@/shared/components/ui/FormInput';
 import { FormToggle } from '@/shared/components/ui/FormToggle';
 import { HomeButton } from '@/shared/components/ui/HomeButton';
+import { useMiniPlayerSpacing } from '@/domains/player/hooks/use-mini-player-spacing';
 
 type FieldErrors = Partial<Record<string, string>>;
 
@@ -28,6 +29,7 @@ export function EditTrackScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const miniPlayerSpacing = useMiniPlayerSpacing();
   const { data: track, isLoading } = useTrackById(id ?? '');
   const updateTrack = useUpdateTrack();
 
@@ -110,7 +112,7 @@ export function EditTrackScreen() {
     >
       <ScrollView
         style={[styles.container, { paddingTop: insets.top }]}
-        contentContainerStyle={styles.content}
+        contentContainerStyle={[styles.content, { paddingBottom: 60 + miniPlayerSpacing }]}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >

@@ -10,9 +10,11 @@ import { UserRole } from '@/domains/users/types/users.types';
 import { ROLE_LABELS } from '@/domains/users/constants/role-labels';
 import { MoreMenuCard, MenuOption } from '@/domains/users/components/MoreMenuCard';
 import { formatFullName } from '@/shared/utils/formatName';
+import { useMiniPlayerSpacing } from '@/domains/player/hooks/use-mini-player-spacing';
 
 export function MoreScreen() {
   const insets = useSafeAreaInsets();
+  const miniPlayerSpacing = useMiniPlayerSpacing();
   const router = useRouter();
   const user = useAuthStore((s) => s.user);
   const logoutMutation = useLogout();
@@ -37,7 +39,7 @@ export function MoreScreen() {
       icon: 'chat-processing-outline',
       label: 'Chat',
       description: 'Conversaciones sobre solicitudes activas',
-      action: () => router.push('/(tabs)/more/chat' as any),
+      action: () => router.push('/more/chat' as any),
     },
     ...(isAuthor
       ? []
@@ -67,7 +69,7 @@ export function MoreScreen() {
   return (
     <ScrollView
       style={[styles.container, { paddingTop: insets.top }]}
-      contentContainerStyle={styles.content}
+      contentContainerStyle={[styles.content, { paddingBottom: 40 + miniPlayerSpacing }]}
       showsVerticalScrollIndicator={false}
     >
       <View style={styles.bgOrb1} pointerEvents="none" />

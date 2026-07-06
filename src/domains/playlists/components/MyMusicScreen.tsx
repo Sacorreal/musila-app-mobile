@@ -8,6 +8,7 @@ import { Brand, Typography } from '@/constants/theme';
 import { useAuthStore } from '@/domains/auth/store/useAuthStore';
 import { UserRole } from '@/domains/users/types/users.types';
 import { playTracks } from '@/domains/player/utils/playQueue';
+import { useMiniPlayerSpacing } from '@/domains/player/hooks/use-mini-player-spacing';
 import { usePlaylists } from '@/domains/playlists/hooks/use-playlists.hooks';
 import { PlaylistCard } from '@/domains/playlists/components/PlaylistCard';
 import { CreatePlaylistModal } from '@/domains/playlists/components/CreatePlaylistModal';
@@ -17,6 +18,7 @@ export function MyMusicScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const user = useAuthStore((s) => s.user);
+  const miniPlayerSpacing = useMiniPlayerSpacing();
   const [showCreateModal, setShowCreateModal] = useState(false);
 
   const { data: playlists = [], isLoading: loadingPlaylists } = usePlaylists();
@@ -34,7 +36,7 @@ export function MyMusicScreen() {
   return (
     <ScrollView
       style={[styles.container, { paddingTop: insets.top }]}
-      contentContainerStyle={styles.content}
+      contentContainerStyle={[styles.content, { paddingBottom: 40 + miniPlayerSpacing }]}
       showsVerticalScrollIndicator={false}
     >
       <View style={styles.bgOrb} pointerEvents="none" />

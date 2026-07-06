@@ -46,6 +46,8 @@ export default function RootLayout() {
               <Stack.Screen name="tracks" options={{ headerShown: false }} />
               <Stack.Screen name="artists" options={{ headerShown: false }} />
               <Stack.Screen name="playlists" options={{ headerShown: false }} />
+              <Stack.Screen name="publish" options={{ headerShown: false }} />
+              <Stack.Screen name="more" options={{ headerShown: false }} />
             </Stack>
           </AuthGate>
           <GlobalPlayer />
