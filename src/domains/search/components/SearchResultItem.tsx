@@ -2,6 +2,7 @@ import { Image } from 'expo-image';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Typography } from '@/constants/theme';
 import { resolveGenreName } from '@/domains/tracks/utils/resolveGenreName';
+import { formatFullName } from '@/shared/utils/formatName';
 import type { SearchResult } from '../types/search.types';
 
 interface SearchResultItemProps {
@@ -15,7 +16,7 @@ const PLACEHOLDER = require('@/assets/images/icon.png');
 export function SearchResultItem({ result, onPress }: SearchResultItemProps) {
   const authorLabel = Array.isArray(result.authors)
     ? result.authors
-        .map((a) => (typeof a === 'string' ? a : `${a.name} ${a.lastName}`))
+        .map((a) => (typeof a === 'string' ? a : formatFullName(a.name, a.lastName)))
         .join(', ')
     : '';
 

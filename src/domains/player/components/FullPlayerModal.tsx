@@ -17,6 +17,7 @@ import { AddToPlaylistBottomSheet } from '@/domains/tracks/components/AddToPlayl
 import { RequestUseModal } from '@/domains/tracks/components/RequestUseModal';
 import type { AuthorTrackDto, TracksResponseDto } from '@/domains/tracks/types/tracks.types';
 import { usePlayerStore } from '@/shared/stores/player.store';
+import { formatFullName } from '@/shared/utils/formatName';
 import { formatTime } from '../utils/formatTime';
 import { PlayerSeekBar } from './PlayerSeekBar';
 
@@ -52,6 +53,7 @@ export function FullPlayerModal({
 
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [showPlaylistSheet, setShowPlaylistSheet] = useState(false);
+  const [scrubSeconds, setScrubSeconds] = useState<number | null>(null);
 
   if (!currentTrack) return null;
 
@@ -129,7 +131,7 @@ export function FullPlayerModal({
                     accessibilityRole="link"
                   >
                     <Text style={styles.authorLink}>
-                      {author.name} {author.lastName}
+                      {formatFullName(author.name, author.lastName)}
                       {index < authorObjects.length - 1 ? ',' : ''}
                     </Text>
                   </Pressable>
@@ -142,9 +144,17 @@ export function FullPlayerModal({
 
           {/* Seek bar */}
           <View style={styles.seekSection}>
-            <PlayerSeekBar progress={progress} duration={duration} onSeek={onSeek} />
+            <PlayerSeekBar
+              progress={progress}
+              duration={duration}
+              onSeek={(seconds) => {
+                setScrubSeconds(null);
+                onSeek(seconds);
+              }}
+              onScrub={setScrubSeconds}
+            />
             <View style={styles.timesRow}>
-              <Text style={styles.timeText}>{formatTime(progress)}</Text>
+              <Text style={styles.timeText}>{formatTime(scrubSeconds ?? progress)}</Text>
               <Text style={styles.timeText}>{formatTime(duration)}</Text>
             </View>
           </View>

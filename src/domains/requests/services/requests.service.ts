@@ -18,8 +18,11 @@ export const requestsService = {
     return data;
   },
 
-  async updateStatus(id: string, status: RequestStatus): Promise<TrackRequest> {
-    const { data } = await api.put<TrackRequest>(apiURLs.requestedTracks.byId(id), { status });
+  async updateStatus(
+    id: string,
+    input: { status: RequestStatus; documentUrl?: string },
+  ): Promise<TrackRequest> {
+    const { data } = await api.put<TrackRequest>(apiURLs.requestedTracks.byId(id), input);
     return data;
   },
 

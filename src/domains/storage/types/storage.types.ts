@@ -7,7 +7,7 @@ export enum StorageFolder {
 }
 
 export interface PresignedUrlRequest {
-  folder: StorageFolder;
+  folder: StorageFolder | string;
   fileType: string;
 }
 
@@ -20,7 +20,7 @@ export interface PresignedUrlResponse {
 export interface UploadableFile {
   uri: string;
   mimeType: string;
-  folder: StorageFolder;
+  folder: StorageFolder | string;
 }
 
 export interface UploadedFile {

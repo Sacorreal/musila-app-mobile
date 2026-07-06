@@ -7,8 +7,9 @@ import { Brand, Typography } from '@/constants/theme';
 import { useAuthStore } from '@/domains/auth/store/useAuthStore';
 import { UserRole } from '@/domains/users/types/users.types';
 import { useRequests, useUpdateRequestStatus } from '@/domains/requests/hooks/use-requests.hooks';
-import { RequestStatus } from '@/domains/requests/types/requests.types';
+import { RequestStatus, type TrackRequest } from '@/domains/requests/types/requests.types';
 import { RequestCard } from '@/domains/requests/components/RequestCard';
+import { ApproveRequestModal } from '@/domains/requests/components/ApproveRequestModal';
 import { RequestsTabBar, TabKey } from '@/domains/requests/components/RequestsTabBar';
 import { RequestsFilterBar } from '@/domains/requests/components/RequestsFilterBar';
 import { getAvailableTabs } from '@/domains/requests/libs/requests.utils';
@@ -21,6 +22,7 @@ export function RequestsScreen() {
   const availableTabs = getAvailableTabs(role);
   const [activeTab, setActiveTab] = useState<TabKey>(availableTabs[0]);
   const [statusFilter, setStatusFilter] = useState('all');
+  const [approvingRequest, setApprovingRequest] = useState<TrackRequest | null>(null);
 
   const { data: requests = [], isLoading } = useRequests();
   const updateMutation = useUpdateRequestStatus();
@@ -52,22 +54,8 @@ export function RequestsScreen() {
     setStatusFilter('all');
   };
 
-  const handleApprove = (id: string) => {
-    Alert.alert('Aprobar solicitud', '¿Deseas aprobar esta solicitud?', [
-      { text: 'Cancelar', style: 'cancel' },
-      {
-        text: 'Aprobar',
-        onPress: () => {
-          updateMutation.mutate(
-            { id, status: RequestStatus.APROBADA },
-            {
-              onSuccess: () => Toast.show({ type: 'success', text1: 'Solicitud aprobada' }),
-              onError: () => Toast.show({ type: 'error', text1: 'No se pudo actualizar' }),
-            }
-          );
-        },
-      },
-    ]);
+  const handleApprove = (request: TrackRequest) => {
+    setApprovingRequest(request);
   };
 
   const handleReject = (id: string) => {
@@ -168,6 +156,12 @@ export function RequestsScreen() {
           }
         />
       )}
+
+      <ApproveRequestModal
+        visible={!!approvingRequest}
+        request={approvingRequest}
+        onClose={() => setApprovingRequest(null)}
+      />
     </View>
   );
 }

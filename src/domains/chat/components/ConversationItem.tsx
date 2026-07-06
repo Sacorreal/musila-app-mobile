@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Brand, Typography } from '@/constants/theme';
 import { RequestStatusBadge } from '@/domains/requests/components/RequestStatusBadge';
 import type { TrackRequest } from '@/domains/requests/types/requests.types';
+import { formatFullName } from '@/shared/utils/formatName';
 
 interface ConversationItemProps {
   request: TrackRequest;
@@ -20,7 +21,7 @@ export function ConversationItem({ request, userId, onPress }: ConversationItemP
     : false;
 
   const otherPartyName = isAuthor
-    ? `${request.requester?.name ?? ''} ${request.requester?.lastName ?? ''}`.trim()
+    ? formatFullName(request.requester?.name, request.requester?.lastName)
     : 'Autor';
 
   const hasUnread = (request.unreadCount ?? 0) > 0;

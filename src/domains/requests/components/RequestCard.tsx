@@ -4,12 +4,13 @@ import { Brand, Typography } from '@/constants/theme';
 import { RequestStatus } from '../types/requests.types';
 import { RequestStatusBadge } from './RequestStatusBadge';
 import type { TrackRequest } from '../types/requests.types';
+import { formatFullName } from '@/shared/utils/formatName';
 
 interface RequestCardProps {
   request: TrackRequest;
   activeTab: 'enviadas' | 'recibidas';
   userId?: string;
-  onApprove?: (id: string) => void;
+  onApprove?: (request: TrackRequest) => void;
   onReject?: (id: string) => void;
   onCancel?: (id: string) => void;
   isProcessing?: boolean;
@@ -51,7 +52,7 @@ export function RequestCard({
           <Text style={styles.meta} numberOfLines={1}>
             {isSent
               ? `Para: ${request.track?.title ?? '—'}`
-              : `De: ${request.requester?.name ?? '—'} ${request.requester?.lastName ?? ''}`}
+              : `De: ${formatFullName(request.requester?.name, request.requester?.lastName) || '—'}`}
           </Text>
           <Text style={styles.date}>{formattedDate}</Text>
         </View>
@@ -66,7 +67,7 @@ export function RequestCard({
         <View style={styles.actions}>
           <Pressable
             style={[styles.btn, styles.btnApprove]}
-            onPress={() => onApprove?.(request.id)}
+            onPress={() => onApprove?.(request)}
             disabled={isProcessing}
           >
             <Text style={styles.btnText}>Aprobar</Text>

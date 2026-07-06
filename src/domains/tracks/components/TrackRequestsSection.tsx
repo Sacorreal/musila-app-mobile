@@ -3,6 +3,7 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Brand, Typography } from '@/constants/theme';
 import { useRequests } from '@/domains/requests/hooks/use-requests.hooks';
 import { RequestStatusBadge } from '@/domains/requests/components/RequestStatusBadge';
+import { formatFullName } from '@/shared/utils/formatName';
 
 interface TrackRequestsSectionProps {
   trackId: string;
@@ -49,7 +50,7 @@ export function TrackRequestsSection({ trackId }: TrackRequestsSectionProps) {
                 <View style={styles.cardInfo}>
                   <Text style={styles.requesterName} numberOfLines={1}>
                     {request.requester
-                      ? `${request.requester.name} ${request.requester.lastName}`
+                      ? formatFullName(request.requester.name, request.requester.lastName)
                       : 'Solicitante desconocido'}
                   </Text>
                   {!!request.licenseType && (

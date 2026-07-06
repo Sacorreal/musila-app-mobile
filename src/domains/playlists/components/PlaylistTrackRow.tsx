@@ -1,19 +1,20 @@
 import { Image } from 'expo-image';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Brand, Typography } from '@/constants/theme';
 import { formatFullName } from '@/shared/utils/formatName';
-import type { TracksResponseDto } from '../types/tracks.types';
-import { resolveGenreName } from '../utils/resolveGenreName';
+import { resolveGenreName } from '@/domains/tracks/utils/resolveGenreName';
+import type { TracksResponseDto } from '@/domains/tracks/types/tracks.types';
 
-interface TrackCardProps {
+interface PlaylistTrackRowProps {
   track: TracksResponseDto;
-  onPress?: (track: TracksResponseDto) => void;
+  onPress: () => void;
+  onRemove?: () => void;
 }
 
-const COVER_SIZE = 56;
 const PLACEHOLDER = require('@/assets/images/icon.png');
 
-export function TrackCard({ track, onPress }: TrackCardProps) {
+export function PlaylistTrackRow({ track, onPress, onRemove }: PlaylistTrackRowProps) {
   const authorLabel = Array.isArray(track.authors)
     ? track.authors
         .map((a) => (typeof a === 'string' ? a : formatFullName(a.name, a.lastName)))
@@ -21,12 +22,11 @@ export function TrackCard({ track, onPress }: TrackCardProps) {
     : '';
 
   const genreName = resolveGenreName(track.genre);
-  const genreLabel = track.subGenre ? `${genreName} - ${track.subGenre}` : genreName;
 
   return (
     <Pressable
       style={({ pressed }) => [styles.container, pressed && styles.pressed]}
-      onPress={() => onPress?.(track)}
+      onPress={onPress}
     >
       <Image
         source={track.coverUrl ? { uri: track.coverUrl } : PLACEHOLDER}
@@ -42,13 +42,23 @@ export function TrackCard({ track, onPress }: TrackCardProps) {
             {authorLabel}
           </Text>
         )}
-        {!!genreLabel && (
+        {!!genreName && (
           <Text style={styles.genre} numberOfLines={1}>
-            {genreLabel}
+            {genreName}
           </Text>
         )}
       </View>
-      <View style={[styles.dot, track.isAvailable ? styles.dotActive : styles.dotInactive]} />
+      {onRemove && (
+        <Pressable
+          style={({ pressed }) => [styles.removeBtn, pressed && { opacity: 0.6 }]}
+          onPress={onRemove}
+          hitSlop={12}
+          accessibilityRole="button"
+          accessibilityLabel={`Quitar ${track.title} de la playlist`}
+        >
+          <MaterialCommunityIcons name="trash-can-outline" size={20} color="rgba(255,80,80,0.7)" />
+        </Pressable>
+      )}
     </Pressable>
   );
 }
@@ -70,8 +80,8 @@ const styles = StyleSheet.create({
     transform: [{ scale: 0.98 }],
   },
   cover: {
-    width: COVER_SIZE,
-    height: COVER_SIZE,
+    width: 56,
+    height: 56,
     borderRadius: 10,
     backgroundColor: 'rgba(255,255,255,0.08)',
   },
@@ -92,15 +102,8 @@ const styles = StyleSheet.create({
     ...Typography.caption,
     color: Brand.accent,
   },
-  dot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-  },
-  dotActive: {
-    backgroundColor: '#4ade80',
-  },
-  dotInactive: {
-    backgroundColor: 'rgba(255,255,255,0.2)',
+  removeBtn: {
+    padding: 4,
+    flexShrink: 0,
   },
 });

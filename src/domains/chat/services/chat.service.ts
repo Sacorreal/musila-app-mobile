@@ -9,6 +9,6 @@ export const chatService = {
   },
 
   async markAsRead(chatId: string): Promise<void> {
-    await api.post(apiURLs.chats.read(chatId));
+    await api.patch(apiURLs.chats.read(chatId));
   },
 };

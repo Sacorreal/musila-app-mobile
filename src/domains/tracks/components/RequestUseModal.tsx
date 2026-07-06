@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useMemo, useState } from 'react';
 import {
   ActivityIndicator,
+  KeyboardAvoidingView,
   Modal,
   Pressable,
   StyleSheet,
@@ -10,7 +11,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import ReAnimated, { FadeIn, SlideInDown, SlideOutDown } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 import { Brand, Typography } from '@/constants/theme';
 import { useCreateRequest, useRequests } from '@/domains/requests/hooks/use-requests.hooks';
@@ -30,6 +31,7 @@ interface RequestUseModalProps {
 }
 
 export function RequestUseModal({ visible, track, onClose }: RequestUseModalProps) {
+  const insets = useSafeAreaInsets();
   const [message, setMessage] = useState('');
   const [licenseType, setLicenseType] = useState<LicenseType | null>(null);
   const { data: requests = [], isLoading: isCheckingExisting } = useRequests();
@@ -71,14 +73,10 @@ export function RequestUseModal({ visible, track, onClose }: RequestUseModalProp
   };
 
   return (
-    <Modal visible={visible} transparent animationType="none" onRequestClose={handleClose}>
-      <ReAnimated.View entering={FadeIn.duration(180)} style={styles.backdrop}>
-        <Pressable style={styles.backdropPress} onPress={handleClose} />
-        <ReAnimated.View
-          entering={SlideInDown.springify().damping(20)}
-          exiting={SlideOutDown.duration(220)}
-          style={styles.sheet}
-        >
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={handleClose}>
+      <KeyboardAvoidingView style={styles.flex} behavior="padding">
+        <Pressable style={styles.backdrop} onPress={handleClose}>
+          <Pressable style={[styles.sheet, { paddingBottom: 24 + insets.bottom }]}>
           <View style={styles.handle} />
 
           <View style={styles.sheetHeader}>
@@ -148,20 +146,21 @@ export function RequestUseModal({ visible, track, onClose }: RequestUseModalProp
               </Pressable>
             </>
           )}
-        </ReAnimated.View>
-      </ReAnimated.View>
+          </Pressable>
+        </Pressable>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }
 
 const styles = StyleSheet.create({
+  flex: {
+    flex: 1,
+  },
   backdrop: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.6)',
     justifyContent: 'flex-end',
-  },
-  backdropPress: {
-    flex: 1,
   },
   sheet: {
     backgroundColor: '#111827',
@@ -170,7 +169,6 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderColor: 'rgba(255,255,255,0.1)',
     paddingHorizontal: 20,
-    paddingBottom: 36,
     maxHeight: '80%',
   },
   handle: {

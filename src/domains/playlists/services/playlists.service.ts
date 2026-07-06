@@ -1,6 +1,11 @@
 import { api } from '@/shared/libs/api';
 import { apiURLs } from '@/shared/constants/urls';
-import type { CreatePlaylistInput, PaginatedPlaylistsResponse, Playlist } from '../types/playlists.types';
+import type {
+  CreatePlaylistInput,
+  PaginatedPlaylistsResponse,
+  Playlist,
+  UpdatePlaylistInput,
+} from '../types/playlists.types';
 
 export const playlistsService = {
   async getPlaylists(): Promise<Playlist[]> {
@@ -28,6 +33,22 @@ export const playlistsService = {
     if (existingIds.includes(trackId)) return current;
     const { data } = await api.put<Playlist>(apiURLs.playlists.byId(playlistId), {
       trackIds: [...existingIds, trackId],
+    });
+    return data;
+  },
+
+  async updatePlaylist(id: string, input: UpdatePlaylistInput): Promise<Playlist> {
+    const { data } = await api.put<Playlist>(apiURLs.playlists.byId(id), input);
+    return data;
+  },
+
+  async removeTrack(playlistId: string, trackId: string): Promise<Playlist> {
+    const current = await playlistsService.getPlaylistById(playlistId);
+    const remainingIds = (current.tracks ?? [])
+      .filter((t) => t.id !== trackId)
+      .map((t) => t.id);
+    const { data } = await api.put<Playlist>(apiURLs.playlists.byId(playlistId), {
+      trackIds: remainingIds,
     });
     return data;
   },

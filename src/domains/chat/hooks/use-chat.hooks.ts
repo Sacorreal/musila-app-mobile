@@ -7,7 +7,6 @@ export function useChatMessages(chatId: string) {
     queryKey: ['chat', chatId, 'messages'],
     queryFn: () => chatService.getMessages(chatId),
     enabled: !!chatId,
-    refetchInterval: 10_000,
   });
 }
 

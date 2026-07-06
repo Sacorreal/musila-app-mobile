@@ -1,11 +1,13 @@
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { ActivityIndicator, FlatList, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useState } from 'react';
+import { useRouter } from 'expo-router';
 import ReAnimated, { FadeInDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Brand, Typography } from '@/constants/theme';
 import { useAuthStore } from '@/domains/auth/store/useAuthStore';
 import { UserRole } from '@/domains/users/types/users.types';
+import { playTracks } from '@/domains/player/utils/playQueue';
 import { usePlaylists } from '@/domains/playlists/hooks/use-playlists.hooks';
 import { PlaylistCard } from '@/domains/playlists/components/PlaylistCard';
 import { CreatePlaylistModal } from '@/domains/playlists/components/CreatePlaylistModal';
@@ -13,6 +15,7 @@ import type { Playlist } from '@/domains/playlists/types/playlists.types';
 
 export function MyMusicScreen() {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   const user = useAuthStore((s) => s.user);
   const [showCreateModal, setShowCreateModal] = useState(false);
 
@@ -20,8 +23,12 @@ export function MyMusicScreen() {
 
   const canCreatePlaylist = user?.role !== UserRole.INVITADO;
 
-  const handlePlaylistPress = (_playlist: Playlist) => {
-    // Navegación futura al detalle de la playlist
+  const handlePlaylistPress = (playlist: Playlist) => {
+    router.push({ pathname: '/playlists/[id]', params: { id: playlist.id } });
+  };
+
+  const handlePlaylistPlayPress = (playlist: Playlist) => {
+    playTracks(playlist.tracks ?? [], 0);
   };
 
   return (
@@ -59,7 +66,11 @@ export function MyMusicScreen() {
             keyExtractor={(p) => p.id}
             numColumns={2}
             renderItem={({ item }) => (
-              <PlaylistCard playlist={item} onPress={handlePlaylistPress} />
+              <PlaylistCard
+                playlist={item}
+                onPress={handlePlaylistPress}
+                onPlayPress={handlePlaylistPlayPress}
+              />
             )}
             scrollEnabled={false}
             columnWrapperStyle={styles.gridRow}

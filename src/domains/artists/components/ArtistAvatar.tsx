@@ -1,6 +1,7 @@
 import { Image } from 'expo-image';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Typography } from '@/constants/theme';
+import { capitalizeWord } from '@/shared/utils/formatName';
 import type { ArtistDto } from '../types/artists.types';
 
 interface ArtistAvatarProps {
@@ -12,6 +13,8 @@ const AVATAR_SIZE = 64;
 
 export function ArtistAvatar({ artist, onPress }: ArtistAvatarProps) {
   const initials = `${artist.name?.[0] ?? ''}${artist.lastName?.[0] ?? ''}`.toUpperCase();
+  const displayName = capitalizeWord(artist.name);
+  const displayLastName = capitalizeWord(artist.lastName);
 
   return (
     <Pressable
@@ -30,11 +33,13 @@ export function ArtistAvatar({ artist, onPress }: ArtistAvatarProps) {
         </View>
       )}
       <Text style={styles.name} numberOfLines={1}>
-        {artist.name}
+        {displayName}
       </Text>
-      <Text style={styles.lastName} numberOfLines={1}>
-        {artist.lastName}
-      </Text>
+      {!!displayLastName && (
+        <Text style={styles.lastName} numberOfLines={1}>
+          {displayLastName}
+        </Text>
+      )}
     </Pressable>
   );
 }

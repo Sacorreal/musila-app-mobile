@@ -1,6 +1,7 @@
 import { Image } from 'expo-image';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Brand } from '@/constants/theme';
+import { formatFullName } from '@/shared/utils/formatName';
 import type { TracksResponseDto } from '../types/tracks.types';
 import { resolveGenreName } from '../utils/resolveGenreName';
 
@@ -14,7 +15,7 @@ const PLACEHOLDER = require('@/assets/images/icon.png');
 export function FeaturedTrackCard({ track, onPress }: FeaturedTrackCardProps) {
   const authorLabel = Array.isArray(track.authors)
     ? track.authors
-        .map((a) => (typeof a === 'string' ? a : `${a.name} ${a.lastName}`))
+        .map((a) => (typeof a === 'string' ? a : formatFullName(a.name, a.lastName)))
         .join(', ')
     : '';
 

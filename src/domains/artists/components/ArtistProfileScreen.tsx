@@ -9,6 +9,7 @@ import { TrackCard } from '@/domains/tracks/components/TrackCard';
 import { sortByNewest } from '@/domains/tracks/utils/sortTracks';
 import type { TracksResponseDto } from '@/domains/tracks/types/tracks.types';
 import { HomeButton } from '@/shared/components/ui/HomeButton';
+import { formatFullName } from '@/shared/utils/formatName';
 import { useArtistById } from '../hooks/use-artists.hooks';
 
 const AVATAR_SIZE = 96;
@@ -56,7 +57,7 @@ export function ArtistProfileScreen() {
     );
   }
 
-  const fullName = `${artist.name} ${artist.lastName}`.trim();
+  const fullName = formatFullName(artist.name, artist.lastName);
   const initials = `${artist.name?.[0] ?? ''}${artist.lastName?.[0] ?? ''}`.toUpperCase();
   const tracks = sortByNewest((artist.tracks ?? []).filter((track) => track.isAvailable));
 

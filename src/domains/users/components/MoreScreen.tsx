@@ -9,6 +9,7 @@ import { useLogout } from '@/domains/auth/hooks/use-auth.hooks';
 import { UserRole } from '@/domains/users/types/users.types';
 import { ROLE_LABELS } from '@/domains/users/constants/role-labels';
 import { MoreMenuCard, MenuOption } from '@/domains/users/components/MoreMenuCard';
+import { formatFullName } from '@/shared/utils/formatName';
 
 export function MoreScreen() {
   const insets = useSafeAreaInsets();
@@ -17,7 +18,7 @@ export function MoreScreen() {
   const logoutMutation = useLogout();
 
   const initials = `${user?.name?.[0] ?? ''}${user?.lastName?.[0] ?? ''}`.toUpperCase();
-  const fullName = `${user?.name ?? ''} ${user?.lastName ?? ''}`.trim();
+  const fullName = formatFullName(user?.name, user?.lastName);
   const roleLabel = ROLE_LABELS[user?.role as UserRole] ?? user?.role;
 
   const comingSoon = (label: string) =>

@@ -1,7 +1,7 @@
 export enum MessageType {
-  TEXT = 'text',
-  FILE = 'file',
-  IMAGE = 'image',
+  TEXT = 'TEXT',
+  FILE = 'FILE',
+  IMAGE = 'IMAGE',
 }
 
 export interface MessageSender {
@@ -18,10 +18,37 @@ export interface Message {
   content: string;
   type: MessageType;
   fileUrl?: string | null;
+  fileKey?: string | null;
+  fileName?: string | null;
+  fileSize?: number | null;
+  mimeType?: string | null;
   createdAt: string;
 }
 
 export interface PaginatedMessagesResponse {
   data: Message[];
   total: number;
+}
+
+export interface SendMessagePayload {
+  chatId: string;
+  content: string;
+  type: MessageType;
+  filekey?: string;
+  fileName?: string;
+  fileUrl?: string;
+}
+
+export interface IncomingMessagePayload {
+  chatId: string;
+  messageId: string;
+  senderId: string;
+  content: string;
+  type: MessageType;
+  titleTrack?: string;
+  fileUrl?: string;
+  fileKey?: string;
+  fileName?: string;
+  fileSize?: number;
+  mimeType?: string;
 }

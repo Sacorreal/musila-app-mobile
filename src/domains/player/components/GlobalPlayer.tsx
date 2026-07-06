@@ -36,7 +36,8 @@ export function GlobalPlayer() {
 
   const isOwner =
     !!fullTrack &&
-    (fullTrack.authors as any[]).some((a) => typeof a !== 'string' && a.id === userId);
+    Array.isArray(fullTrack.authors) &&
+    fullTrack.authors.some((a) => typeof a !== 'string' && a.id === userId);
   const canRequestUse = !!fullTrack && role !== UserRole.INVITADO && !isOwner;
   const canAddToPlaylist = role !== UserRole.AUTOR;
 

@@ -1,38 +1,93 @@
-import { useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
-import type { GestureResponderEvent } from 'react-native';
+import { useRef, useState } from 'react';
+import { PanResponder, StyleSheet, View } from 'react-native';
 import { Brand } from '@/constants/theme';
 
 interface PlayerSeekBarProps {
   progress: number;
   duration: number;
   onSeek: (seconds: number) => void;
+  onScrub?: (seconds: number) => void;
 }
 
-export function PlayerSeekBar({ progress, duration, onSeek }: PlayerSeekBarProps) {
-  const [barWidth, setBarWidth] = useState(0);
-  const ratio = duration > 0 ? Math.min(progress / duration, 1) : 0;
+const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
 
-  const handleSeek = (e: GestureResponderEvent) => {
-    if (!barWidth || !duration) return;
-    const seekRatio = Math.min(Math.max(e.nativeEvent.locationX / barWidth, 0), 1);
-    onSeek(seekRatio * duration);
+export function PlayerSeekBar({ progress, duration, onSeek, onScrub }: PlayerSeekBarProps) {
+  const [barWidth, setBarWidth] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragRatio, setDragRatio] = useState(0);
+
+  const barWidthRef = useRef(0);
+  const startXRef = useRef(0);
+  const durationRef = useRef(duration);
+  durationRef.current = duration;
+  const onSeekRef = useRef(onSeek);
+  onSeekRef.current = onSeek;
+  const onScrubRef = useRef(onScrub);
+  onScrubRef.current = onScrub;
+
+  const updateRatioFromX = (x: number) => {
+    if (!barWidthRef.current) return;
+    const ratio = clamp(x / barWidthRef.current, 0, 1);
+    setDragRatio(ratio);
+    onScrubRef.current?.(ratio * durationRef.current);
   };
 
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => !!durationRef.current,
+      onMoveShouldSetPanResponder: (_evt, gestureState) =>
+        !!durationRef.current && Math.abs(gestureState.dx) > Math.abs(gestureState.dy),
+      onPanResponderGrant: (evt) => {
+        startXRef.current = evt.nativeEvent.locationX;
+        setIsDragging(true);
+        updateRatioFromX(evt.nativeEvent.locationX);
+      },
+      onPanResponderMove: (_evt, gestureState) => {
+        updateRatioFromX(startXRef.current + gestureState.dx);
+      },
+      onPanResponderRelease: (_evt, gestureState) => {
+        const x = startXRef.current + gestureState.dx;
+        const ratio = barWidthRef.current ? clamp(x / barWidthRef.current, 0, 1) : 0;
+        setIsDragging(false);
+        onSeekRef.current(ratio * durationRef.current);
+      },
+      onPanResponderTerminate: () => {
+        setIsDragging(false);
+      },
+    }),
+  ).current;
+
+  const playbackRatio = duration > 0 ? clamp(progress / duration, 0, 1) : 0;
+  const ratio = isDragging ? dragRatio : playbackRatio;
+
   return (
-    <Pressable
-      style={styles.track}
-      onLayout={(e) => setBarWidth(e.nativeEvent.layout.width)}
-      onPress={handleSeek}
-      hitSlop={{ top: 12, bottom: 12 }}
+    <View
+      style={styles.hitArea}
+      onLayout={(e) => {
+        barWidthRef.current = e.nativeEvent.layout.width;
+        setBarWidth(e.nativeEvent.layout.width);
+      }}
+      {...panResponder.panHandlers}
     >
-      <View style={[styles.fill, { width: `${ratio * 100}%` }]} />
-      <View style={[styles.thumb, { left: Math.max(barWidth * ratio - 6, 0) }]} />
-    </Pressable>
+      <View style={styles.track}>
+        <View style={[styles.fill, { width: `${ratio * 100}%` }]} />
+        <View
+          style={[
+            styles.thumb,
+            isDragging && styles.thumbActive,
+            { left: Math.max(barWidth * ratio - (isDragging ? 8 : 6), 0) },
+          ]}
+        />
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  hitArea: {
+    paddingVertical: 12,
+    justifyContent: 'center',
+  },
   track: {
     height: 5,
     borderRadius: 3,
@@ -55,5 +110,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
     shadowRadius: 3,
     elevation: 3,
+  },
+  thumbActive: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
   },
 });

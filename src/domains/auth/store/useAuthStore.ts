@@ -3,6 +3,7 @@ import { create } from "zustand";
 
 import { decodeToken } from "@/domains/auth/libs/decodeToken";
 import { loginAction } from "@/domains/auth/services/auth.service";
+import { chatSocketService } from "@/domains/chat/services/chat-socket.service";
 import type { AuthUser, LoginPayload } from "../types/auth.types";
 
 type AuthState = {
@@ -37,6 +38,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   logout: async () => {
+    chatSocketService.disconnect();
     await SecureStore.deleteItemAsync("access_token");
     set({ token: undefined, user: undefined });
   },

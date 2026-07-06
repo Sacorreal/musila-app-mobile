@@ -1,10 +1,19 @@
 import { TracksResponseDto } from '@/domains/tracks/types/tracks.types';
+import type { PlaylistCollaborator } from './playlist-collaborator.types';
+
+export interface PlaylistOwner {
+  id: string;
+  name: string;
+  lastName: string;
+}
 
 export interface Playlist {
   id: string;
   title: string;
   cover?: string | null;
   tracks?: TracksResponseDto[];
+  owner?: PlaylistOwner;
+  collaborators?: PlaylistCollaborator[];
   createdAt: string;
   updatedAt: string;
 }

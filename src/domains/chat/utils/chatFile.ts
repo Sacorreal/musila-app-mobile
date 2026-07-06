@@ -1,0 +1,13 @@
+import { MessageType } from '../types/chat.types';
+
+export function resolveMessageType(mimeType: string): MessageType {
+  if (mimeType.startsWith('image/')) return MessageType.IMAGE;
+  return MessageType.FILE;
+}
+
+export function formatFileSize(bytes?: number | null): string {
+  if (!bytes || bytes <= 0) return '';
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+}

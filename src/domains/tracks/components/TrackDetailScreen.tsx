@@ -24,6 +24,7 @@ import { AddToPlaylistBottomSheet } from './AddToPlaylistBottomSheet';
 import { RequestUseModal } from './RequestUseModal';
 import { resolveGenreName } from '../utils/resolveGenreName';
 import { HomeButton } from '@/shared/components/ui/HomeButton';
+import { formatFullName } from '@/shared/utils/formatName';
 
 const COVER_PLACEHOLDER = require('@/assets/images/icon.png');
 
@@ -42,10 +43,7 @@ export function TrackDetailScreen() {
   const [showPlaylistSheet, setShowPlaylistSheet] = useState(false);
   const [showRequestModal, setShowRequestModal] = useState(false);
 
-  const isAuthorRole = role === UserRole.AUTOR || role === UserRole.CANTAUTOR;
   const canAddToPlaylist = role !== UserRole.AUTOR;
-  const canSeeRequests =
-    role === UserRole.AUTOR || role === UserRole.CANTAUTOR || role === UserRole.ADMIN;
 
   const isCurrentlyPlaying = currentTrack?.id === track?.id && isPlaying;
 
@@ -98,11 +96,14 @@ export function TrackDetailScreen() {
     );
   }
 
-  const authorLabel = (track.authors as any[])
-    .map((a) => (typeof a === 'string' ? a : `${a.name} ${a.lastName}`))
+  const trackAuthors = Array.isArray(track.authors) ? track.authors : [];
+
+  const authorLabel = trackAuthors
+    .map((a) => (typeof a === 'string' ? a : formatFullName(a.name, a.lastName)))
     .join(', ');
 
-  const isOwner = (track.authors as any[]).some((a) => typeof a !== 'string' && a.id === userId);
+  const isOwner = trackAuthors.some((a) => typeof a !== 'string' && a.id === userId);
+  const canSeeRequests = isOwner;
   const canRequestUse = role !== UserRole.INVITADO && !isOwner;
   const hasSecondaryActions = canAddToPlaylist || canRequestUse;
   const genreName = resolveGenreName(track.genre);
@@ -129,7 +130,7 @@ export function TrackDetailScreen() {
           <Text style={styles.headerTitle} numberOfLines={1}>
             {track.title}
           </Text>
-          {isAuthorRole && (
+          {isOwner && (
             <Pressable
               style={({ pressed }) => [styles.editIconBtn, pressed && { opacity: 0.6 }]}
               onPress={handleEdit}

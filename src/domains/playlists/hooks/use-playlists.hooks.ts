@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { playlistsService } from '../services/playlists.service';
-import type { CreatePlaylistInput } from '../types/playlists.types';
+import type { CreatePlaylistInput, UpdatePlaylistInput } from '../types/playlists.types';
 
 export function usePlaylists() {
   return useQuery({
@@ -42,6 +42,30 @@ export function useAddTrackToPlaylist() {
   return useMutation({
     mutationFn: ({ playlistId, trackId }: { playlistId: string; trackId: string }) =>
       playlistsService.addTrack(playlistId, trackId),
+    onSuccess: (_, vars) => {
+      qc.invalidateQueries({ queryKey: ['playlists', vars.playlistId] });
+      qc.invalidateQueries({ queryKey: ['playlists'] });
+    },
+  });
+}
+
+export function useUpdatePlaylist() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, input }: { id: string; input: UpdatePlaylistInput }) =>
+      playlistsService.updatePlaylist(id, input),
+    onSuccess: (_, vars) => {
+      qc.invalidateQueries({ queryKey: ['playlists', vars.id] });
+      qc.invalidateQueries({ queryKey: ['playlists'] });
+    },
+  });
+}
+
+export function useRemoveTrackFromPlaylist() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ playlistId, trackId }: { playlistId: string; trackId: string }) =>
+      playlistsService.removeTrack(playlistId, trackId),
     onSuccess: (_, vars) => {
       qc.invalidateQueries({ queryKey: ['playlists', vars.playlistId] });
       qc.invalidateQueries({ queryKey: ['playlists'] });
