@@ -1,58 +1,61 @@
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { useEffect, useRef, useState } from 'react';
-import { Animated, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, TextInput } from 'react-native';
+import Animated, {
+  interpolateColor,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import { Brand } from '@/constants/theme';
+import { useTheme } from '@/shared/hooks/use-theme';
 
 interface SearchBarProps {
-  onQueryChange: (query: string) => void;
+  value: string;
+  onChangeText: (text: string) => void;
+  onSubmit?: () => void;
   placeholder?: string;
 }
 
-export function SearchBar({ onQueryChange, placeholder = 'Buscar canciones...' }: SearchBarProps) {
-  const [value, setValue] = useState('');
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const borderAnim = useRef(new Animated.Value(0)).current;
+export function SearchBar({
+  value,
+  onChangeText,
+  onSubmit,
+  placeholder = 'Buscar canciones, artistas o géneros...',
+}: SearchBarProps) {
+  const theme = useTheme();
+  const focusProgress = useSharedValue(0);
 
-  const handleFocus = () =>
-    Animated.timing(borderAnim, { toValue: 1, duration: 200, useNativeDriver: false }).start();
-  const handleBlur = () =>
-    Animated.timing(borderAnim, { toValue: 0, duration: 200, useNativeDriver: false }).start();
-
-  const borderColor = borderAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['rgba(255,255,255,0.1)', Brand.accent],
-  });
-
-  const handleChange = (text: string) => {
-    setValue(text);
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => {
-      onQueryChange(text);
-    }, 400);
+  const handleFocus = () => {
+    focusProgress.value = withTiming(1, { duration: 200 });
+  };
+  const handleBlur = () => {
+    focusProgress.value = withTiming(0, { duration: 200 });
   };
 
-  const handleClear = () => {
-    setValue('');
-    onQueryChange('');
-  };
+  const animatedBorderStyle = useAnimatedStyle(() => ({
+    borderColor: interpolateColor(
+      focusProgress.value,
+      [0, 1],
+      [theme.backgroundElement, Brand.accent],
+    ),
+  }));
 
-  useEffect(() => {
-    return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-    };
-  }, []);
+  const handleClear = () => onChangeText('');
 
   return (
-    <Animated.View style={[styles.container, { borderColor }]}>
-      <MaterialCommunityIcons name="magnify" size={20} color="rgba(255,255,255,0.4)" />
+    <Animated.View
+      style={[styles.container, { backgroundColor: theme.backgroundElement }, animatedBorderStyle]}
+    >
+      <MaterialCommunityIcons name="magnify" size={20} color={theme.textSecondary} />
       <TextInput
-        style={styles.input}
+        style={[styles.input, { color: theme.text }]}
         value={value}
-        onChangeText={handleChange}
+        onChangeText={onChangeText}
         onFocus={handleFocus}
         onBlur={handleBlur}
+        onSubmitEditing={onSubmit}
         placeholder={placeholder}
-        placeholderTextColor="rgba(255,255,255,0.25)"
+        placeholderTextColor={theme.textSecondary}
         selectionColor={Brand.accent}
         autoCorrect={false}
         autoCapitalize="none"
@@ -60,7 +63,7 @@ export function SearchBar({ onQueryChange, placeholder = 'Buscar canciones...' }
       />
       {value.length > 0 && (
         <Pressable onPress={handleClear} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-          <MaterialCommunityIcons name="close-circle" size={18} color="rgba(255,255,255,0.4)" />
+          <MaterialCommunityIcons name="close-circle" size={18} color={theme.textSecondary} />
         </Pressable>
       )}
     </Animated.View>
@@ -71,7 +74,6 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.06)',
     borderRadius: 14,
     borderWidth: 1,
     paddingHorizontal: 14,
@@ -80,7 +82,6 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    color: '#FFFFFF',
     fontSize: 15,
     height: '100%',
   },

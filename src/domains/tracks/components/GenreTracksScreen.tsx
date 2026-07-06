@@ -145,7 +145,7 @@ export function GenreTracksScreen() {
 
       {tracks.length > 0 && (
         <View style={styles.searchWrapper}>
-          <SearchBar onQueryChange={setSearchQuery} placeholder="Buscar canción..." />
+          <SearchBar value={searchQuery} onChangeText={setSearchQuery} placeholder="Buscar canción..." />
         </View>
       )}
 

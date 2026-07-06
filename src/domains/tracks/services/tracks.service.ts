@@ -2,6 +2,7 @@ import { apiURLs } from '@/shared/constants/urls';
 import { api } from '@/shared/libs/api';
 import type {
   CreateTrackInput,
+  FilterTrackInput,
   LanguageDto,
   PaginatedTracksResponse,
   TracksResponseDto,
@@ -32,6 +33,13 @@ export const tracksService = {
 
   async createTrack(input: CreateTrackInput): Promise<TracksResponseDto> {
     const { data } = await api.post<TracksResponseDto>(apiURLs.tracks.base, input);
+    return data;
+  },
+
+  async searchTracks(filters: FilterTrackInput): Promise<PaginatedTracksResponse> {
+    const { data } = await api.get<PaginatedTracksResponse>(apiURLs.tracks.base, {
+      params: filters,
+    });
     return data;
   },
 

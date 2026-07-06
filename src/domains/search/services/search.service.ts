@@ -1,12 +1,12 @@
 import { api } from '@/shared/libs/api';
 import { apiURLs } from '@/shared/constants/urls';
-import type { SearchResponse, SearchResult } from '../types/search.types';
+import type { SearchResponse } from '../types/search.types';
 
 export const searchService = {
-  async search(query: string): Promise<SearchResult[]> {
+  async search(query: string, limit = 20): Promise<SearchResponse> {
     const { data } = await api.get<SearchResponse>(apiURLs.search.base, {
-      params: { q: query },
+      params: { q: query, limit },
     });
-    return Array.isArray(data.data) ? data.data : (Array.isArray(data as any) ? (data as any) : []);
+    return data;
   },
 };

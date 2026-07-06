@@ -80,25 +80,19 @@ export interface LanguageDto {
 }
 
 export interface FilterTrackInput {
+  title?: string;
   isGospel?: boolean;
   genreId?: string;
   subGenre?: string;
   language?: string;
   isAvailable?: boolean;
-  page?: number;
-  take?: number;
+  limit?: number;
+  offset?: number;
 }
 
 export interface PaginatedTracksResponse {
   data: TracksResponseDto[];
-  meta: {
-    page: number;
-    take: number;
-    itemCount: number;
-    pageCount: number;
-    hasPreviousPage: boolean;
-    hasNextPage: boolean;
-  };
+  total: number;
 }
 
 

@@ -68,7 +68,7 @@ export function MyTracksList({ onTrackPress }: MyTracksListProps) {
 
       <View style={styles.toolbar}>
         <View style={styles.searchWrapper}>
-          <SearchBar onQueryChange={setSearchQuery} placeholder="Buscar en mis canciones..." />
+          <SearchBar value={searchQuery} onChangeText={setSearchQuery} placeholder="Buscar en mis canciones..." />
         </View>
         <Pressable
           style={[styles.filterButton, hasActiveFilters && styles.filterButtonActive]}
