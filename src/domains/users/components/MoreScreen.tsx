@@ -1,5 +1,6 @@
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import ReAnimated, { FadeInDown } from 'react-native-reanimated';
+import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 import { Brand, Typography } from '@/constants/theme';
@@ -11,6 +12,7 @@ import { MoreMenuCard, MenuOption } from '@/domains/users/components/MoreMenuCar
 
 export function MoreScreen() {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   const user = useAuthStore((s) => s.user);
   const logoutMutation = useLogout();
 
@@ -29,6 +31,12 @@ export function MoreScreen() {
       label: 'Mi Perfil',
       description: 'Ver y editar tu información personal',
       action: () => comingSoon('Mi Perfil'),
+    },
+    {
+      icon: 'chat-processing-outline',
+      label: 'Chat',
+      description: 'Conversaciones sobre solicitudes activas',
+      action: () => router.push('/(tabs)/more/chat' as any),
     },
     ...(isAuthor
       ? []

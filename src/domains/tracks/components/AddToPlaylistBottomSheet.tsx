@@ -4,16 +4,15 @@ import {
   FlatList,
   KeyboardAvoidingView,
   Modal,
-  Platform,
   Pressable,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
-import ReAnimated, { FadeIn, SlideInDown, SlideOutDown } from 'react-native-reanimated';
 import { Image } from 'expo-image';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Toast from 'react-native-toast-message';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Brand, Typography } from '@/constants/theme';
 import { usePlaylists, useAddTrackToPlaylist } from '@/domains/playlists/hooks/use-playlists.hooks';
 import { CreatePlaylistForm } from '@/domains/playlists/components/CreatePlaylistForm';
@@ -29,118 +28,133 @@ interface AddToPlaylistBottomSheetProps {
 }
 
 export function AddToPlaylistBottomSheet({ visible, track, onClose }: AddToPlaylistBottomSheetProps) {
+  const insets = useSafeAreaInsets();
   const { data: playlists = [], isLoading } = usePlaylists();
   const addToPlaylist = useAddTrackToPlaylist();
-  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+
+  const trackIsInPlaylist = (playlist: Playlist) =>
+    (playlist.tracks ?? []).some((t) => t.id === track.id);
 
   const handleSelect = async (playlist: Playlist) => {
+    if (trackIsInPlaylist(playlist)) {
+      Toast.show({ type: 'info', text1: `Ya está en "${playlist.title}"` });
+      return;
+    }
     try {
       await addToPlaylist.mutateAsync({ playlistId: playlist.id, trackId: track.id });
-      onClose();
+      handleClose();
       Toast.show({ type: 'success', text1: `Agregado a "${playlist.title}"` });
-    } catch {
-      Toast.show({ type: 'error', text1: 'No se pudo agregar', text2: 'Intenta de nuevo' });
+    } catch (error: any) {
+      Toast.show({
+        type: 'error',
+        text1: 'No se pudo agregar',
+        text2: error?.response?.data?.message ?? 'Intenta de nuevo',
+      });
     }
   };
 
   const handlePlaylistCreated = (playlist: Playlist) => {
-    setShowCreateModal(false);
+    setShowCreateForm(false);
     handleSelect(playlist);
   };
 
   const handleClose = () => {
-    setShowCreateModal(false);
+    setShowCreateForm(false);
     onClose();
   };
 
   return (
-    <Modal visible={visible} transparent animationType="none" onRequestClose={handleClose}>
-      <KeyboardAvoidingView
-        style={styles.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      >
-      <ReAnimated.View entering={FadeIn.duration(180)} style={styles.backdrop}>
-        <Pressable style={styles.backdropPress} onPress={handleClose} />
-        <ReAnimated.View
-          entering={SlideInDown.springify().damping(20)}
-          exiting={SlideOutDown.duration(220)}
-          style={styles.sheet}
-        >
-          <View style={styles.handle} />
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={handleClose}>
+      <KeyboardAvoidingView style={styles.flex} behavior="padding">
+        <Pressable style={styles.backdrop} onPress={handleClose}>
+          <Pressable style={[styles.sheet, { paddingBottom: 24 + insets.bottom }]}>
+            <View style={styles.handle} />
 
-          <View style={styles.sheetHeader}>
-            {showCreateModal ? (
-              <Pressable onPress={() => setShowCreateModal(false)} hitSlop={12} style={styles.backRow}>
-                <MaterialCommunityIcons name="arrow-left" size={20} color="rgba(255,255,255,0.6)" />
-                <Text style={styles.sheetTitle}>Nueva playlist</Text>
+            <View style={styles.sheetHeader}>
+              {showCreateForm ? (
+                <Pressable onPress={() => setShowCreateForm(false)} hitSlop={12} style={styles.backRow}>
+                  <MaterialCommunityIcons name="arrow-left" size={20} color="rgba(255,255,255,0.6)" />
+                  <Text style={styles.sheetTitle}>Nueva playlist</Text>
+                </Pressable>
+              ) : (
+                <Text style={styles.sheetTitle}>Agregar a playlist</Text>
+              )}
+              <Pressable onPress={handleClose} hitSlop={16} style={styles.closeBtn}>
+                <MaterialCommunityIcons name="close" size={22} color="rgba(255,255,255,0.6)" />
               </Pressable>
+            </View>
+
+            <Text style={styles.trackLabel} numberOfLines={1}>
+              "{track.title}"
+            </Text>
+
+            {showCreateForm ? (
+              <CreatePlaylistForm
+                onClose={() => setShowCreateForm(false)}
+                onCreated={handlePlaylistCreated}
+              />
+            ) : isLoading ? (
+              <View style={styles.center}>
+                <ActivityIndicator color={Brand.primary} />
+              </View>
+            ) : playlists.length === 0 ? (
+              <View style={styles.empty}>
+                <MaterialCommunityIcons name="playlist-music-outline" size={36} color="rgba(255,255,255,0.2)" />
+                <Text style={styles.emptyText}>No tienes playlists aún</Text>
+                <Pressable
+                  style={({ pressed }) => [styles.createBtn, pressed && { opacity: 0.8 }]}
+                  onPress={() => setShowCreateForm(true)}
+                >
+                  <MaterialCommunityIcons name="plus" size={18} color="#FFFFFF" />
+                  <Text style={styles.createBtnText}>Crear playlist</Text>
+                </Pressable>
+              </View>
             ) : (
-              <Text style={styles.sheetTitle}>Agregar a playlist</Text>
+              <FlatList
+                data={playlists}
+                keyExtractor={(p) => p.id}
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.listContent}
+                renderItem={({ item: playlist }) => {
+                  const alreadyAdded = trackIsInPlaylist(playlist);
+                  return (
+                    <Pressable
+                      style={({ pressed }) => [
+                        styles.playlistItem,
+                        pressed && !alreadyAdded && { opacity: 0.7 },
+                        alreadyAdded && styles.playlistItemAdded,
+                      ]}
+                      onPress={() => handleSelect(playlist)}
+                      disabled={addToPlaylist.isPending}
+                    >
+                      <Image
+                        source={playlist.cover ? { uri: playlist.cover } : COVER_PLACEHOLDER}
+                        style={styles.playlistCover}
+                        contentFit="cover"
+                      />
+                      <View style={styles.playlistInfo}>
+                        <Text style={styles.playlistTitle} numberOfLines={1}>
+                          {playlist.title}
+                        </Text>
+                        {alreadyAdded && <Text style={styles.addedLabel}>Ya agregada</Text>}
+                      </View>
+                      {addToPlaylist.isPending && addToPlaylist.variables?.playlistId === playlist.id ? (
+                        <ActivityIndicator size="small" color={Brand.accent} />
+                      ) : (
+                        <MaterialCommunityIcons
+                          name={alreadyAdded ? 'check-circle' : 'plus-circle-outline'}
+                          size={22}
+                          color={alreadyAdded ? '#4ade80' : Brand.accent}
+                        />
+                      )}
+                    </Pressable>
+                  );
+                }}
+              />
             )}
-            <Pressable onPress={handleClose} hitSlop={12}>
-              <MaterialCommunityIcons name="close" size={22} color="rgba(255,255,255,0.4)" />
-            </Pressable>
-          </View>
-
-          <Text style={styles.trackLabel} numberOfLines={1}>
-            "{track.title}"
-          </Text>
-
-          {showCreateModal ? (
-            <CreatePlaylistForm
-              onClose={() => setShowCreateModal(false)}
-              onCreated={handlePlaylistCreated}
-            />
-          ) : isLoading ? (
-            <View style={styles.center}>
-              <ActivityIndicator color={Brand.primary} />
-            </View>
-          ) : playlists.length === 0 ? (
-            <View style={styles.empty}>
-              <MaterialCommunityIcons name="playlist-music-outline" size={36} color="rgba(255,255,255,0.2)" />
-              <Text style={styles.emptyText}>No tienes playlists aún</Text>
-              <Pressable
-                style={({ pressed }) => [styles.createBtn, pressed && { opacity: 0.8 }]}
-                onPress={() => setShowCreateModal(true)}
-              >
-                <MaterialCommunityIcons name="plus" size={18} color="#FFFFFF" />
-                <Text style={styles.createBtnText}>Crear playlist</Text>
-              </Pressable>
-            </View>
-          ) : (
-            <FlatList
-              data={playlists}
-              keyExtractor={(p) => p.id}
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={styles.listContent}
-              renderItem={({ item: playlist }) => {
-                const isProcessing = addToPlaylist.isPending;
-                return (
-                  <Pressable
-                    style={({ pressed }) => [styles.playlistItem, pressed && { opacity: 0.7 }]}
-                    onPress={() => handleSelect(playlist)}
-                    disabled={isProcessing}
-                  >
-                    <Image
-                      source={playlist.cover ? { uri: playlist.cover } : COVER_PLACEHOLDER}
-                      style={styles.playlistCover}
-                      contentFit="cover"
-                    />
-                    <Text style={styles.playlistTitle} numberOfLines={1}>
-                      {playlist.title}
-                    </Text>
-                    <MaterialCommunityIcons
-                      name="plus-circle-outline"
-                      size={22}
-                      color={Brand.accent}
-                    />
-                  </Pressable>
-                );
-              }}
-            />
-          )}
-        </ReAnimated.View>
-      </ReAnimated.View>
+          </Pressable>
+        </Pressable>
       </KeyboardAvoidingView>
     </Modal>
   );
@@ -155,9 +169,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.6)',
     justifyContent: 'flex-end',
   },
-  backdropPress: {
-    flex: 1,
-  },
   sheet: {
     backgroundColor: '#111827',
     borderTopLeftRadius: 28,
@@ -165,8 +176,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderColor: 'rgba(255,255,255,0.1)',
     paddingHorizontal: 20,
-    paddingBottom: 36,
-    maxHeight: '70%',
+    maxHeight: '75%',
   },
   handle: {
     width: 40,
@@ -192,6 +202,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
+  },
+  closeBtn: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   trackLabel: {
     ...Typography.caption,
@@ -234,6 +252,7 @@ const styles = StyleSheet.create({
   },
   listContent: {
     gap: 4,
+    paddingBottom: 8,
   },
   playlistItem: {
     flexDirection: 'row',
@@ -243,16 +262,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
     borderRadius: 12,
   },
+  playlistItemAdded: {
+    opacity: 0.6,
+  },
   playlistCover: {
     width: 48,
     height: 48,
     borderRadius: 10,
     backgroundColor: 'rgba(255,255,255,0.08)',
   },
+  playlistInfo: {
+    flex: 1,
+    gap: 2,
+  },
   playlistTitle: {
     ...Typography.label,
     color: '#FFFFFF',
-    flex: 1,
     fontWeight: '500',
+  },
+  addedLabel: {
+    ...Typography.caption,
+    color: '#4ade80',
   },
 });

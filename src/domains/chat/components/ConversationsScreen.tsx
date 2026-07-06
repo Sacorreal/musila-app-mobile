@@ -16,7 +16,7 @@ export function ConversationsScreen() {
 
   const handleConversationPress = (request: TrackRequest) => {
     if (request.chat?.id) {
-      router.push(`/(tabs)/chat/${request.chat.id}` as any);
+      router.push(`/(tabs)/more/chat/${request.chat.id}` as any);
     }
   };
 

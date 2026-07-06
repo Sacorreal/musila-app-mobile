@@ -16,8 +16,8 @@ import { Brand, Typography } from '@/constants/theme';
 import { useAuthStore } from '@/domains/auth/store/useAuthStore';
 import { UserRole } from '@/domains/users/types/users.types';
 import { useTrackById } from '@/domains/tracks/hooks/use-tracks.hooks';
-import { usePlayerStore, type Track } from '@/shared/stores/player.store';
-import type { TracksResponseDto } from '../types/tracks.types';
+import { usePlayerStore } from '@/shared/stores/player.store';
+import { mapToPlayerTrack } from '@/domains/player/utils/mapToPlayerTrack';
 import { IntellectualPropertySection } from './IntellectualPropertySection';
 import { TrackRequestsSection } from './TrackRequestsSection';
 import { AddToPlaylistBottomSheet } from './AddToPlaylistBottomSheet';
@@ -26,20 +26,6 @@ import { resolveGenreName } from '../utils/resolveGenreName';
 import { HomeButton } from '@/shared/components/ui/HomeButton';
 
 const COVER_PLACEHOLDER = require('@/assets/images/icon.png');
-
-function mapToPlayerTrack(track: TracksResponseDto): Track {
-  const artist = (track.authors as any[])
-    .map((a) => (typeof a === 'string' ? a : `${a.name} ${a.lastName}`))
-    .join(', ');
-  return {
-    id: track.id,
-    title: track.title,
-    artist,
-    albumArt: track.coverUrl ?? undefined,
-    audioUrl: track.audioUrl ?? '',
-    duration: 0,
-  };
-}
 
 export function TrackDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();

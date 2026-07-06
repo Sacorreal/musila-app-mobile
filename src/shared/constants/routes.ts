@@ -35,15 +35,9 @@ export const tabsByRoles: MenuRoute[] = [
     rolAccess: [UserRole.AUTOR, UserRole.CANTAUTOR],
   },
   {
-    title: "Chat",
-    icon: "chat-processing",
-    name: "chat",
-    rolAccess: ALL_ROLES,
-  },
-  {
     title: "Más",
     icon: "plus-box",
     name: "more",
-    rolAccess: [UserRole.AUTOR, UserRole.CANTAUTOR],
+    rolAccess: ALL_ROLES,
   },
 ];

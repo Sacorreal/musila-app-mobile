@@ -15,7 +15,10 @@ export default function TabLayout() {
   );
 
   return (
-    <NativeTabs labelVisibilityMode="labeled">
+    <NativeTabs
+      labelVisibilityMode="labeled"
+      labelStyle={{ fontSize: 10, fontWeight: '600' }}
+    >
       {tabsByRoles.map((tab) => (
         <NativeTabs.Trigger
           key={tab.name}

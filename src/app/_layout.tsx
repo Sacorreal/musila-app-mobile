@@ -8,6 +8,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 
 import { useAuthStore } from "@/domains/auth/store/useAuthStore";
+import { GlobalPlayer } from "@/domains/player/components/GlobalPlayer";
 import { queryClient } from "@/shared/libs/queryClient";
 import "../global.css";
 
@@ -46,6 +47,7 @@ export default function RootLayout() {
               <Stack.Screen name="artists" options={{ headerShown: false }} />
             </Stack>
           </AuthGate>
+          <GlobalPlayer />
           <StatusBar style="auto" />
           <Toast />
         </GestureHandlerRootView>

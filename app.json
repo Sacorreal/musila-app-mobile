@@ -13,7 +13,10 @@
     "ios": {
       "bundleIdentifier": "com.sacorrea.musila",
       "buildNumber": "1",
-      "icon": "./assets/images/icon.png"
+      "icon": "./assets/images/icon.png",
+      "infoPlist": {
+        "UIBackgroundModes": ["audio"]
+      }
     },
     "android": {
       "adaptiveIcon": {

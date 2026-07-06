@@ -28,6 +28,7 @@ interface PlayerActions {
   skipNext: () => void;
   skipPrev: () => void;
   setExpanded: (expanded: boolean) => void;
+  reset: () => void;
 }
 
 export const usePlayerStore = create<PlayerState & PlayerActions>((set, get) => ({
@@ -65,11 +66,7 @@ export const usePlayerStore = create<PlayerState & PlayerActions>((set, get) => 
   },
 
   skipPrev: () => {
-    const { queue, currentTrack, progress } = get();
-    if (progress > 3) {
-      set({ progress: 0 });
-      return;
-    }
+    const { queue, currentTrack } = get();
     if (!queue.length) return;
     const currentIndex = queue.findIndex((t) => t.id === currentTrack?.id);
     const prevTrack = queue[currentIndex - 1] ?? queue[queue.length - 1];
@@ -78,4 +75,14 @@ export const usePlayerStore = create<PlayerState & PlayerActions>((set, get) => 
 
   setExpanded: (expanded) =>
     set({ isExpanded: expanded }),
+
+  reset: () =>
+    set({
+      currentTrack: null,
+      isPlaying: false,
+      progress: 0,
+      duration: 0,
+      queue: [],
+      isExpanded: false,
+    }),
 }));

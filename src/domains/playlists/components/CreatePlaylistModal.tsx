@@ -1,5 +1,5 @@
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { KeyboardAvoidingView, Modal, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { KeyboardAvoidingView, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Typography } from '@/constants/theme';
 import { CreatePlaylistForm } from './CreatePlaylistForm';
 import type { Playlist } from '../types/playlists.types';
@@ -13,10 +13,7 @@ interface CreatePlaylistModalProps {
 export function CreatePlaylistModal({ visible, onClose, onCreated }: CreatePlaylistModalProps) {
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-      <KeyboardAvoidingView
-        style={styles.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      >
+      <KeyboardAvoidingView style={styles.flex} behavior="padding">
         <Pressable style={styles.backdrop} onPress={onClose}>
           <Pressable style={styles.sheet}>
             <View style={styles.header}>
