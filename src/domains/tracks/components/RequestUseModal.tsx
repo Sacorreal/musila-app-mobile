@@ -1,5 +1,5 @@
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import axios from 'axios';
+import { isAxiosError } from 'axios';
 import { useMemo, useState } from 'react';
 import {
   ActivityIndicator,
@@ -16,6 +16,7 @@ import Toast from 'react-native-toast-message';
 import { Brand, Typography } from '@/constants/theme';
 import { useCreateRequest, useRequests } from '@/domains/requests/hooks/use-requests.hooks';
 import { RequestStatus } from '@/domains/requests/types/requests.types';
+import { isPlanLimitError } from '@/shared/utils/planLimitError';
 import { LicenseType } from '../types/tracks.types';
 import type { TracksResponseDto } from '../types/tracks.types';
 
@@ -61,12 +62,12 @@ export function RequestUseModal({ visible, track, onClose }: RequestUseModalProp
       Toast.show({ type: 'success', text1: 'Solicitud enviada', text2: `"${track.title}"` });
       handleClose();
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response?.status === 409) {
+      if (isAxiosError(error) && error.response?.status === 409) {
         Toast.show({
           type: 'error',
           text1: 'Ya tienes una solicitud activa para esta canción.',
         });
-      } else {
+      } else if (!isPlanLimitError(error)) {
         Toast.show({ type: 'error', text1: 'No se pudo enviar la solicitud', text2: 'Intenta de nuevo' });
       }
     }
@@ -87,7 +88,7 @@ export function RequestUseModal({ visible, track, onClose }: RequestUseModalProp
           </View>
 
           <Text style={styles.trackLabel} numberOfLines={1}>
-            "{track.title}"
+            &quot;{track.title}&quot;
           </Text>
 
           {isCheckingExisting ? (

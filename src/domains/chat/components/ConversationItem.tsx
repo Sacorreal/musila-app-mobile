@@ -1,8 +1,9 @@
 import { Image } from 'expo-image';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { Brand, Typography } from '@/constants/theme';
+import { Typography } from '@/constants/theme';
 import { RequestStatusBadge } from '@/domains/requests/components/RequestStatusBadge';
 import type { TrackRequest } from '@/domains/requests/types/requests.types';
+import { UnreadCountBadge } from '@/shared/components/ui/UnreadCountBadge';
 import { formatFullName } from '@/shared/utils/formatName';
 
 interface ConversationItemProps {
@@ -24,8 +25,6 @@ export function ConversationItem({ request, userId, onPress }: ConversationItemP
     ? formatFullName(request.requester?.name, request.requester?.lastName)
     : 'Autor';
 
-  const hasUnread = (request.unreadCount ?? 0) > 0;
-
   return (
     <Pressable
       style={({ pressed }) => [styles.row, pressed && styles.pressed]}
@@ -45,11 +44,7 @@ export function ConversationItem({ request, userId, onPress }: ConversationItemP
         </Text>
         <RequestStatusBadge status={request.status} />
       </View>
-      {hasUnread && (
-        <View style={styles.unreadBadge}>
-          <Text style={styles.unreadText}>{request.unreadCount}</Text>
-        </View>
-      )}
+      <UnreadCountBadge count={request.unreadCount ?? 0} />
     </Pressable>
   );
 }
@@ -88,19 +83,5 @@ const styles = StyleSheet.create({
   party: {
     ...Typography.caption,
     color: 'rgba(255,255,255,0.5)',
-  },
-  unreadBadge: {
-    backgroundColor: Brand.primary,
-    borderRadius: 12,
-    minWidth: 22,
-    height: 22,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 6,
-  },
-  unreadText: {
-    ...Typography.caption,
-    color: '#FFFFFF',
-    fontWeight: '700',
   },
 });

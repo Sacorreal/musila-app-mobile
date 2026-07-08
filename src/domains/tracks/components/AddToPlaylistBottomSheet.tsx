@@ -86,7 +86,7 @@ export function AddToPlaylistBottomSheet({ visible, track, onClose }: AddToPlayl
             </View>
 
             <Text style={styles.trackLabel} numberOfLines={1}>
-              "{track.title}"
+              &quot;{track.title}&quot;
             </Text>
 
             {showCreateForm ? (

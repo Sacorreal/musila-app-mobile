@@ -15,7 +15,8 @@
       "buildNumber": "1",
       "icon": "./assets/images/icon.png",
       "infoPlist": {
-        "UIBackgroundModes": ["audio"]
+        "UIBackgroundModes": ["audio"],
+        "LSApplicationQueriesSchemes": ["instagram-stories", "instagram"]
       }
     },
     "android": {

@@ -2,7 +2,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Image } from 'expo-image';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { Brand, Typography } from '@/constants/theme';
+import { Typography } from '@/constants/theme';
 
 interface CoverPickerFieldProps {
   uri: string;

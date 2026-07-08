@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -22,38 +22,40 @@ import { FormInput } from '@/shared/components/ui/FormInput';
 import { FormToggle } from '@/shared/components/ui/FormToggle';
 import { HomeButton } from '@/shared/components/ui/HomeButton';
 import { useMiniPlayerSpacing } from '@/domains/player/hooks/use-mini-player-spacing';
+import type { TracksResponseDto } from '@/domains/tracks/types/tracks.types';
 
 type FieldErrors = Partial<Record<string, string>>;
 
 export function EditTrackScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const insets = useSafeAreaInsets();
+  const { data: track, isLoading } = useTrackById(id ?? '');
+
+  if (isLoading || !track) {
+    return (
+      <View style={[styles.loadingContainer, { paddingTop: insets.top }]}>
+        <ActivityIndicator color={Brand.primary} size="large" />
+      </View>
+    );
+  }
+
+  return <EditTrackForm key={track.id} track={track} />;
+}
+
+function EditTrackForm({ track }: { track: TracksResponseDto }) {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const miniPlayerSpacing = useMiniPlayerSpacing();
-  const { data: track, isLoading } = useTrackById(id ?? '');
   const updateTrack = useUpdateTrack();
 
-  const [title, setTitle] = useState('');
+  const [title, setTitle] = useState(track.title ?? '');
   const [genreId, setGenreId] = useState('');
-  const [subGenre, setSubGenre] = useState('');
-  const [language, setLanguage] = useState('');
-  const [lyric, setLyric] = useState('');
-  const [isAvailable, setIsAvailable] = useState(true);
-  const [isGospel, setIsGospel] = useState(false);
+  const [subGenre, setSubGenre] = useState(track.subGenre ?? '');
+  const [language, setLanguage] = useState(track.language ?? '');
+  const [lyric, setLyric] = useState(track.lyric ?? '');
+  const [isAvailable, setIsAvailable] = useState(track.isAvailable ?? true);
+  const [isGospel, setIsGospel] = useState(track.isGospel ?? false);
   const [errors, setErrors] = useState<FieldErrors>({});
-  const [initialized, setInitialized] = useState(false);
-
-  useEffect(() => {
-    if (track && !initialized) {
-      setTitle(track.title ?? '');
-      setSubGenre(track.subGenre ?? '');
-      setLanguage(track.language ?? '');
-      setLyric(track.lyric ?? '');
-      setIsAvailable(track.isAvailable ?? true);
-      setIsGospel(track.isGospel ?? false);
-      setInitialized(true);
-    }
-  }, [track, initialized]);
 
   const handleSubmit = async () => {
     if (!title.trim()) {
@@ -85,7 +87,7 @@ export function EditTrackScreen() {
     if (genreId) payload.genreId = genreId;
 
     try {
-      await updateTrack.mutateAsync({ id: id!, data: payload });
+      await updateTrack.mutateAsync({ id: track.id, data: payload });
       Toast.show({ type: 'success', text1: 'Canción actualizada' });
       router.back();
     } catch (err: any) {
@@ -96,14 +98,6 @@ export function EditTrackScreen() {
       });
     }
   };
-
-  if (isLoading) {
-    return (
-      <View style={[styles.loadingContainer, { paddingTop: insets.top }]}>
-        <ActivityIndicator color={Brand.primary} size="large" />
-      </View>
-    );
-  }
 
   return (
     <KeyboardAvoidingView
@@ -149,7 +143,7 @@ export function EditTrackScreen() {
               onChange={(id) => setGenreId(id)}
               error={errors.genreId}
             />
-            {!genreId && !!track?.genre && (
+            {!genreId && !!track.genre && (
               <Text style={styles.currentValue}>Actual: {resolveGenreName(track.genre)}</Text>
             )}
           </View>

@@ -11,7 +11,7 @@ import {
 import * as DocumentPicker from 'expo-document-picker';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Toast from 'react-native-toast-message';
-import { Brand, Typography } from '@/constants/theme';
+import { Typography } from '@/constants/theme';
 import { useUploadStorage } from '@/domains/storage/hooks/use-upload-storage.hooks';
 import { StorageFolder } from '@/domains/storage/types/storage.types';
 import { useUpdateRequestStatus } from '../hooks/use-requests.hooks';
@@ -90,7 +90,7 @@ export function ApproveRequestModal({ visible, request, onClose }: ApproveReques
             </View>
 
             <Text style={styles.subtitle} numberOfLines={2}>
-              ¿Deseas aprobar la solicitud de "{request.track?.title ?? 'esta canción'}"?
+              ¿Deseas aprobar la solicitud de &quot;{request.track?.title ?? 'esta canción'}&quot;?
             </Text>
 
             <Text style={styles.fieldLabel}>Documento de licencia (opcional)</Text>

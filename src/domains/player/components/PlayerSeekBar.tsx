@@ -1,5 +1,7 @@
-import { useRef, useState } from 'react';
-import { PanResponder, StyleSheet, View } from 'react-native';
+import { useState } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { Gesture, GestureDetector, State } from 'react-native-gesture-handler';
+import { runOnJS } from 'react-native-reanimated';
 import { Brand } from '@/constants/theme';
 
 interface PlayerSeekBarProps {
@@ -16,70 +18,60 @@ export function PlayerSeekBar({ progress, duration, onSeek, onScrub }: PlayerSee
   const [isDragging, setIsDragging] = useState(false);
   const [dragRatio, setDragRatio] = useState(0);
 
-  const barWidthRef = useRef(0);
-  const startXRef = useRef(0);
-  const durationRef = useRef(duration);
-  durationRef.current = duration;
-  const onSeekRef = useRef(onSeek);
-  onSeekRef.current = onSeek;
-  const onScrubRef = useRef(onScrub);
-  onScrubRef.current = onScrub;
-
-  const updateRatioFromX = (x: number) => {
-    if (!barWidthRef.current) return;
-    const ratio = clamp(x / barWidthRef.current, 0, 1);
+  const emitScrub = (ratio: number) => {
     setDragRatio(ratio);
-    onScrubRef.current?.(ratio * durationRef.current);
+    onScrub?.(ratio * duration);
   };
 
-  const panResponder = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => !!durationRef.current,
-      onMoveShouldSetPanResponder: (_evt, gestureState) =>
-        !!durationRef.current && Math.abs(gestureState.dx) > Math.abs(gestureState.dy),
-      onPanResponderGrant: (evt) => {
-        startXRef.current = evt.nativeEvent.locationX;
-        setIsDragging(true);
-        updateRatioFromX(evt.nativeEvent.locationX);
-      },
-      onPanResponderMove: (_evt, gestureState) => {
-        updateRatioFromX(startXRef.current + gestureState.dx);
-      },
-      onPanResponderRelease: (_evt, gestureState) => {
-        const x = startXRef.current + gestureState.dx;
-        const ratio = barWidthRef.current ? clamp(x / barWidthRef.current, 0, 1) : 0;
-        setIsDragging(false);
-        onSeekRef.current(ratio * durationRef.current);
-      },
-      onPanResponderTerminate: () => {
-        setIsDragging(false);
-      },
-    }),
-  ).current;
+  const emitSeek = (ratio: number) => {
+    setIsDragging(false);
+    onSeek(ratio * duration);
+  };
+
+  const pan = Gesture.Pan()
+    .enabled(duration > 0)
+    .activeOffsetX([-10, 10])
+    .failOffsetY([-10, 10])
+    .onBegin((e) => {
+      const ratio = barWidth ? clamp(e.x / barWidth, 0, 1) : 0;
+      runOnJS(setIsDragging)(true);
+      runOnJS(emitScrub)(ratio);
+    })
+    .onUpdate((e) => {
+      const ratio = barWidth ? clamp(e.x / barWidth, 0, 1) : 0;
+      runOnJS(emitScrub)(ratio);
+    })
+    .onEnd((e) => {
+      const ratio = barWidth ? clamp(e.x / barWidth, 0, 1) : 0;
+      runOnJS(emitSeek)(ratio);
+    })
+    .onFinalize((e) => {
+      if (e.state !== State.END) {
+        runOnJS(setIsDragging)(false);
+      }
+    });
 
   const playbackRatio = duration > 0 ? clamp(progress / duration, 0, 1) : 0;
   const ratio = isDragging ? dragRatio : playbackRatio;
 
   return (
-    <View
-      style={styles.hitArea}
-      onLayout={(e) => {
-        barWidthRef.current = e.nativeEvent.layout.width;
-        setBarWidth(e.nativeEvent.layout.width);
-      }}
-      {...panResponder.panHandlers}
-    >
-      <View style={styles.track}>
-        <View style={[styles.fill, { width: `${ratio * 100}%` }]} />
-        <View
-          style={[
-            styles.thumb,
-            isDragging && styles.thumbActive,
-            { left: Math.max(barWidth * ratio - (isDragging ? 8 : 6), 0) },
-          ]}
-        />
+    <GestureDetector gesture={pan}>
+      <View
+        style={styles.hitArea}
+        onLayout={(e) => setBarWidth(e.nativeEvent.layout.width)}
+      >
+        <View style={styles.track}>
+          <View style={[styles.fill, { width: `${ratio * 100}%` }]} />
+          <View
+            style={[
+              styles.thumb,
+              isDragging && styles.thumbActive,
+              { left: Math.max(barWidth * ratio - (isDragging ? 8 : 6), 0) },
+            ]}
+          />
+        </View>
       </View>
-    </View>
+    </GestureDetector>
   );
 }
 

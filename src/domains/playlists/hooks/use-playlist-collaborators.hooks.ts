@@ -25,6 +25,7 @@ export function useAddCollaborators() {
     onSuccess: (_, vars) => {
       qc.invalidateQueries({ queryKey: [PLAYLIST_COLLAB_QUERY_KEY, vars.playlistId] });
       qc.invalidateQueries({ queryKey: ['playlists', vars.playlistId] });
+      qc.invalidateQueries({ queryKey: ['plan', 'me'] });
     },
   });
 }

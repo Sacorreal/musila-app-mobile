@@ -57,21 +57,14 @@ export function ChatDetailScreen() {
   const [pendingAttachment, setPendingAttachment] = useState<PendingAttachment | null>(null);
   const lastMarkedChatRef = useRef<string | null>(null);
 
-  useEffect(() => {
-    setLiveMessages([]);
-    setInputValue('');
-    setPendingAttachment(null);
-  }, [chatId]);
-
-  useEffect(() => {
-    if (history.length > 0) {
-      setLiveMessages((prev) => prev.filter((m) => !m.id.startsWith('optimistic-')));
-    }
-  }, [history]);
-
   const allMessages = useMemo(() => {
     const historyIds = new Set(history.map((m) => m.id));
-    const uniqueLive = liveMessages.filter((m) => !historyIds.has(m.id));
+    const hasHistory = history.length > 0;
+    const uniqueLive = liveMessages.filter((m) => {
+      if (historyIds.has(m.id)) return false;
+      if (hasHistory && m.id.startsWith('optimistic-')) return false;
+      return true;
+    });
     return [...history, ...uniqueLive];
   }, [history, liveMessages]);
 
@@ -232,7 +225,7 @@ export function ChatDetailScreen() {
         setTimeout(() => {
           queryClient.invalidateQueries({ queryKey: ['chat', chatId, 'messages'] });
         }, 1500);
-      } catch (error) {
+      } catch {
         Toast.show({ type: 'error', text1: 'Error al subir el archivo', text2: 'Intenta de nuevo' });
         setLiveMessages((prev) => prev.filter((m) => m.id !== optimisticId));
       }

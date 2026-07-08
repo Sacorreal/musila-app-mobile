@@ -23,6 +23,7 @@ export function useCreatePlaylist() {
     mutationFn: (input: CreatePlaylistInput) => playlistsService.createPlaylist(input),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['playlists'] });
+      qc.invalidateQueries({ queryKey: ['plan', 'me'] });
     },
   });
 }

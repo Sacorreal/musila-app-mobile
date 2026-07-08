@@ -29,6 +29,8 @@ import { AudioPickerField } from './AudioPickerField';
 import { CoverPickerField } from './CoverPickerField';
 import { IntellectualPropertyFormSection, type IPEntry } from './IntellectualPropertyFormSection';
 import { useMiniPlayerSpacing } from '@/domains/player/hooks/use-mini-player-spacing';
+import { isPlanLimitError } from '@/shared/utils/planLimitError';
+import type { TracksResponseDto } from '@/domains/tracks/types/tracks.types';
 
 type FieldErrors = Partial<Record<string, string>>;
 
@@ -41,6 +43,7 @@ export function PublishTrackScreen() {
   const { data: genres = [] } = useGenres();
 
   const [success, setSuccess] = useState(false);
+  const [publishedTrack, setPublishedTrack] = useState<TracksResponseDto | null>(null);
 
   const [title, setTitle] = useState('');
   const [genreId, setGenreId] = useState('');
@@ -66,6 +69,7 @@ export function PublishTrackScreen() {
     setCoverUri(''); setCoverMimeType('image/jpeg'); setIsAvailable(true); setIsGospel(false);
     setIpEntries([]); setErrors({});
     setSuccess(false);
+    setPublishedTrack(null);
   };
 
   const handleSubmit = async () => {
@@ -92,7 +96,7 @@ export function PublishTrackScreen() {
 
     if (!result.success) {
       const fmt: FieldErrors = {};
-      result.error.errors.forEach((e) => {
+      result.error.issues.forEach((e) => {
         const key = e.path[0] as string;
         if (!fmt[key]) fmt[key] = e.message;
       });
@@ -103,7 +107,7 @@ export function PublishTrackScreen() {
 
     setErrors({});
 
-    let uploaded: Array<{ field: string; key: string; publicUrl: string }> = [];
+    let uploaded: { field: string; key: string; publicUrl: string }[] = [];
 
     try {
       const filesToUpload = [
@@ -123,7 +127,7 @@ export function PublishTrackScreen() {
 
       if (!audioFile) throw new Error('No se pudo subir el audio');
 
-      await createTrack.mutateAsync({
+      const created = await createTrack.mutateAsync({
         title: result.data.title,
         genreId: result.data.genreId,
         subGenre: result.data.subGenre,
@@ -147,17 +151,20 @@ export function PublishTrackScreen() {
         }),
       });
 
+      setPublishedTrack(created);
       setSuccess(true);
     } catch (err: any) {
       if (uploaded.length > 0) {
         rollback(uploaded.map((u) => u.key)).catch(() => {});
       }
       console.error('[PublishTrackScreen] handleSubmit failed:', err);
-      Toast.show({
-        type: 'error',
-        text1: 'No se pudo publicar',
-        text2: err?.response?.data?.message ?? err?.message ?? 'Intenta de nuevo',
-      });
+      if (!isPlanLimitError(err)) {
+        Toast.show({
+          type: 'error',
+          text1: 'No se pudo publicar',
+          text2: err?.response?.data?.message ?? err?.message ?? 'Intenta de nuevo',
+        });
+      }
     }
   };
 
@@ -166,7 +173,7 @@ export function PublishTrackScreen() {
   if (success) {
     return (
       <View style={[styles.container, { paddingTop: insets.top }]}>
-        <PublishSuccessScreen onReset={reset} />
+        <PublishSuccessScreen onReset={reset} track={publishedTrack} />
       </View>
     );
   }

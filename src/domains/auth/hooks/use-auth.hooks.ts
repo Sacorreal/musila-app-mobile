@@ -22,7 +22,6 @@ export const useLogout = () => {
   return useMutation({
     mutationFn: logout,
     onSuccess: () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       router.replace("/(auth)/login" as any);
     },
   });

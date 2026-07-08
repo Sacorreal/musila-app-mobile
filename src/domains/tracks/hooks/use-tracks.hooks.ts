@@ -37,6 +37,7 @@ export function useCreateTrack() {
     mutationFn: (input: CreateTrackInput) => tracksService.createTrack(input),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['tracks'] });
+      qc.invalidateQueries({ queryKey: ['plan', 'me'] });
     },
   });
 }

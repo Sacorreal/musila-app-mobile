@@ -36,6 +36,12 @@ export function MoreScreen() {
       action: () => comingSoon('Mi Perfil'),
     },
     {
+      icon: 'star-four-points-outline',
+      label: 'Mi Plan',
+      description: 'Uso y beneficios de tu suscripción',
+      action: () => router.push('/more/plan' as any),
+    },
+    {
       icon: 'chat-processing-outline',
       label: 'Chat',
       description: 'Conversaciones sobre solicitudes activas',

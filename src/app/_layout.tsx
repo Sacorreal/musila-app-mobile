@@ -9,6 +9,7 @@ import Toast from "react-native-toast-message";
 
 import { useAuthStore } from "@/domains/auth/store/useAuthStore";
 import { GlobalPlayer } from "@/domains/player/components/GlobalPlayer";
+import { PlanLimitModal } from "@/domains/plan/components/PlanLimitModal";
 import { queryClient } from "@/shared/libs/queryClient";
 import "../global.css";
 
@@ -51,6 +52,7 @@ export default function RootLayout() {
             </Stack>
           </AuthGate>
           <GlobalPlayer />
+          <PlanLimitModal />
           <StatusBar style="auto" />
           <Toast />
         </GestureHandlerRootView>

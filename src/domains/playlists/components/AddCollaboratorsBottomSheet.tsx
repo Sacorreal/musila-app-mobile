@@ -15,6 +15,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Brand, Typography } from '@/constants/theme';
 import { useGuests } from '@/domains/guests/hooks/use-guests.hooks';
 import { formatFullName } from '@/shared/utils/formatName';
+import { isPlanLimitError } from '@/shared/utils/planLimitError';
 import { useAddCollaborators } from '../hooks/use-playlist-collaborators.hooks';
 import { CollaboratorPermission } from '../types/playlist-collaborator.types';
 import { InviteGuestPanel } from './InviteGuestPanel';
@@ -90,11 +91,13 @@ export function AddCollaboratorsBottomSheet({
       }
       handleClose();
     } catch (error: any) {
-      Toast.show({
-        type: 'error',
-        text1: 'No se pudo agregar',
-        text2: error?.response?.data?.message ?? 'Intenta de nuevo',
-      });
+      if (!isPlanLimitError(error)) {
+        Toast.show({
+          type: 'error',
+          text1: 'No se pudo agregar',
+          text2: error?.response?.data?.message ?? 'Intenta de nuevo',
+        });
+      }
     }
   };
 

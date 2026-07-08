@@ -1,6 +1,7 @@
 import { Image } from 'expo-image';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Brand, Typography } from '@/constants/theme';
+import { UnreadCountBadge } from '@/shared/components/ui/UnreadCountBadge';
 import { RequestStatus } from '../types/requests.types';
 import { RequestStatusBadge } from './RequestStatusBadge';
 import type { TrackRequest } from '../types/requests.types';
@@ -56,7 +57,10 @@ export function RequestCard({
           </Text>
           <Text style={styles.date}>{formattedDate}</Text>
         </View>
-        <RequestStatusBadge status={request.status} />
+        <View style={styles.badges}>
+          <RequestStatusBadge status={request.status} />
+          <UnreadCountBadge count={request.unreadCount ?? 0} />
+        </View>
       </View>
 
       {!!request.licenseType && (
@@ -135,6 +139,10 @@ const styles = StyleSheet.create({
   date: {
     ...Typography.caption,
     color: 'rgba(255,255,255,0.3)',
+  },
+  badges: {
+    alignItems: 'flex-end',
+    gap: 6,
   },
   license: {
     ...Typography.caption,

@@ -8,6 +8,10 @@ export function useColorScheme() {
   const [hasHydrated, setHasHydrated] = useState(false);
 
   useEffect(() => {
+    // Patrón estándar de hidratación SSR/web: `hasHydrated` solo puede saberse tras
+    // el primer efecto en el cliente, no hay valor derivable en render ni prop de la
+    // que depender.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setHasHydrated(true);
   }, []);
 

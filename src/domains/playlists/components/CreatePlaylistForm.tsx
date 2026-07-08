@@ -1,9 +1,16 @@
-import { useRef, useState } from 'react';
-import { ActivityIndicator, Animated, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useState } from 'react';
+import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import Animated, {
+  interpolateColor,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import Toast from 'react-native-toast-message';
 import { Brand, Typography } from '@/constants/theme';
 import { useCreatePlaylist } from '../hooks/use-playlists.hooks';
 import type { Playlist } from '../types/playlists.types';
+import { isPlanLimitError } from '@/shared/utils/planLimitError';
 import { z } from 'zod';
 
 const titleSchema = z.string().min(1, 'El nombre es requerido').max(80, 'Máximo 80 caracteres');
@@ -17,17 +24,19 @@ export function CreatePlaylistForm({ onClose, onCreated }: CreatePlaylistFormPro
   const [title, setTitle] = useState('');
   const [error, setError] = useState('');
   const createMutation = useCreatePlaylist();
-  const borderAnim = useRef(new Animated.Value(0)).current;
+  const focusProgress = useSharedValue(0);
 
-  const handleFocus = () =>
-    Animated.timing(borderAnim, { toValue: 1, duration: 200, useNativeDriver: false }).start();
-  const handleBlur = () =>
-    Animated.timing(borderAnim, { toValue: 0, duration: 200, useNativeDriver: false }).start();
+  const handleFocus = () => {
+    focusProgress.value = withTiming(1, { duration: 200 });
+  };
+  const handleBlur = () => {
+    focusProgress.value = withTiming(0, { duration: 200 });
+  };
 
-  const borderColor = borderAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [error ? 'rgba(255,80,80,0.5)' : 'rgba(255,255,255,0.1)', Brand.accent],
-  });
+  const restColor = error ? 'rgba(255,80,80,0.5)' : 'rgba(255,255,255,0.1)';
+  const animatedBorderStyle = useAnimatedStyle(() => ({
+    borderColor: interpolateColor(focusProgress.value, [0, 1], [restColor, Brand.accent]),
+  }));
 
   const handleCreate = () => {
     const result = titleSchema.safeParse(title);
@@ -46,8 +55,10 @@ export function CreatePlaylistForm({ onClose, onCreated }: CreatePlaylistFormPro
           onCreated?.(playlist);
           onClose();
         },
-        onError: () => {
-          Toast.show({ type: 'error', text1: 'No se pudo crear la playlist' });
+        onError: (err) => {
+          if (!isPlanLimitError(err)) {
+            Toast.show({ type: 'error', text1: 'No se pudo crear la playlist' });
+          }
         },
       }
     );
@@ -56,7 +67,7 @@ export function CreatePlaylistForm({ onClose, onCreated }: CreatePlaylistFormPro
   return (
     <View style={styles.form}>
       <Text style={styles.fieldLabel}>Nombre</Text>
-      <Animated.View style={[styles.inputWrapper, { borderColor }]}>
+      <Animated.View style={[styles.inputWrapper, animatedBorderStyle]}>
         <TextInput
           style={styles.input}
           placeholder="Ej. Mis favoritas"

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { storageService } from '../services/storage.service';
-import type { StorageFolder, UploadableFile, UploadedFile } from '../types/storage.types';
+import type { UploadableFile, UploadedFile } from '../types/storage.types';
 
 interface UploadProgress {
   [field: string]: number;
@@ -11,10 +11,10 @@ export function useUploadStorage() {
   const [isUploading, setIsUploading] = useState(false);
 
   const uploadFiles = async (
-    files: Array<UploadableFile & { field: string }>
-  ): Promise<Array<UploadedFile & { field: string }>> => {
+    files: (UploadableFile & { field: string })[]
+  ): Promise<(UploadedFile & { field: string })[]> => {
     setIsUploading(true);
-    const results: Array<UploadedFile & { field: string }> = [];
+    const results: (UploadedFile & { field: string })[] = [];
 
     try {
       for (const file of files) {

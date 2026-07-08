@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -33,16 +33,18 @@ export function EditPlaylistModal({ visible, playlist, onClose }: EditPlaylistMo
   const [coverUri, setCoverUri] = useState(playlist.cover ?? '');
   const [coverMimeType, setCoverMimeType] = useState('image/jpeg');
   const [error, setError] = useState('');
+  const [prevVisible, setPrevVisible] = useState(visible);
   const updatePlaylist = useUpdatePlaylist();
   const { uploadFiles, isUploading } = useUploadStorage();
 
-  useEffect(() => {
+  if (visible !== prevVisible) {
+    setPrevVisible(visible);
     if (visible) {
       setTitle(playlist.title);
       setCoverUri(playlist.cover ?? '');
       setError('');
     }
-  }, [visible, playlist.title, playlist.cover]);
+  }
 
   const isSaving = updatePlaylist.isPending || isUploading;
 

@@ -1,10 +1,12 @@
-import axios from 'axios';
+import { create } from 'axios';
 import * as SecureStore from "expo-secure-store";
+import { usePlanLimitStore } from '../stores/planLimit.store';
+import { isPlanLimitError } from '../utils/planLimitError';
 
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'https://musila-api-development.up.railway.app';
 
-export const api = axios.create({
+export const api = create({
   baseURL: BASE_URL,
   headers: { 'Content-Type': 'application/json' },
   timeout: 15_000,
@@ -23,6 +25,10 @@ api.interceptors.response.use(
   async (error) => {
     if (error.response?.status === 401) {
       await SecureStore.deleteItemAsync("access_token");
+    }
+    if (isPlanLimitError(error)) {
+      const { resource, limit, current } = error.response!.data;
+      usePlanLimitStore.getState().showLimit({ resource, limit, current });
     }
     return Promise.reject(error);
   }

@@ -12,7 +12,11 @@ import { RequestCard } from '@/domains/requests/components/RequestCard';
 import { ApproveRequestModal } from '@/domains/requests/components/ApproveRequestModal';
 import { RequestsTabBar, TabKey } from '@/domains/requests/components/RequestsTabBar';
 import { RequestsFilterBar } from '@/domains/requests/components/RequestsFilterBar';
-import { getAvailableTabs } from '@/domains/requests/libs/requests.utils';
+import {
+  getAvailableTabs,
+  getReceivedRequests,
+  getSentRequests,
+} from '@/domains/requests/libs/requests.utils';
 import { useMiniPlayerSpacing } from '@/domains/player/hooks/use-mini-player-spacing';
 
 export function RequestsScreen() {
@@ -29,20 +33,12 @@ export function RequestsScreen() {
   const { data: requests = [], isLoading } = useRequests();
   const updateMutation = useUpdateRequestStatus();
 
-  const sent = useMemo(
-    () => requests.filter((r) => r.requester?.id === user?.id),
-    [requests, user?.id]
-  );
+  const sent = useMemo(() => getSentRequests(requests, user?.id), [requests, user?.id]);
 
-  const received = useMemo(() => {
-    if (role === UserRole.ADMIN) return requests.filter((r) => r.requester?.id !== user?.id);
-    return requests.filter((r) => {
-      const authors = r.track?.authors ?? [];
-      return Array.isArray(authors)
-        ? authors.some((a) => (typeof a === 'string' ? a : a.id) === user?.id)
-        : false;
-    });
-  }, [requests, user?.id, role]);
+  const received = useMemo(
+    () => getReceivedRequests(requests, user?.id, role),
+    [requests, user?.id, role]
+  );
 
   const sourceList = activeTab === 'enviadas' ? sent : received;
 

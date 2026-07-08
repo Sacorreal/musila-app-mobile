@@ -18,7 +18,7 @@ export interface TrackRequest {
     title: string;
     coverUrl?: string;
     audioUrl?: string;
-    authors?: Array<string | { id: string; name: string; lastName: string }>;
+    authors?: (string | { id: string; name: string; lastName: string })[];
   };
   requester?: {
     id: string;

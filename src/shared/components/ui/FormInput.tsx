@@ -1,12 +1,16 @@
-import { useRef } from 'react';
 import {
-  Animated,
   StyleSheet,
   Text,
   TextInput,
   View,
   type TextInputProps,
 } from 'react-native';
+import Animated, {
+  interpolateColor,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import { Brand } from '@/constants/theme';
 
 export interface FormInputProps {
@@ -34,22 +38,24 @@ export function FormInput({
   autoCapitalize = 'none',
   rightElement,
 }: FormInputProps) {
-  const borderAnim = useRef(new Animated.Value(0)).current;
+  const focusProgress = useSharedValue(0);
 
-  const handleFocus = () =>
-    Animated.timing(borderAnim, { toValue: 1, duration: 200, useNativeDriver: false }).start();
-  const handleBlur = () =>
-    Animated.timing(borderAnim, { toValue: 0, duration: 200, useNativeDriver: false }).start();
+  const handleFocus = () => {
+    focusProgress.value = withTiming(1, { duration: 200 });
+  };
+  const handleBlur = () => {
+    focusProgress.value = withTiming(0, { duration: 200 });
+  };
 
-  const borderColor = borderAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [error ? 'rgba(255,80,80,0.6)' : 'rgba(255,255,255,0.1)', Brand.accent],
-  });
+  const restColor = error ? 'rgba(255,80,80,0.6)' : 'rgba(255,255,255,0.1)';
+  const animatedBorderStyle = useAnimatedStyle(() => ({
+    borderColor: interpolateColor(focusProgress.value, [0, 1], [restColor, Brand.accent]),
+  }));
 
   return (
     <View style={styles.wrapper}>
       <Text style={styles.label}>{label}</Text>
-      <Animated.View style={[styles.container, { borderColor }, multiline && styles.containerMulti]}>
+      <Animated.View style={[styles.container, animatedBorderStyle, multiline && styles.containerMulti]}>
         <TextInput
           style={[styles.input, multiline && styles.inputMulti]}
           placeholder={placeholder}

@@ -54,7 +54,7 @@ export function AudioPickerField({ uri, fileName, onPick, onClear, error }: Audi
     if (status.didJustFinish) {
       player.seekTo(0).catch(() => {});
     }
-  }, [status.didJustFinish]);
+  }, [status.didJustFinish, player]);
 
   useEffect(() => {
     if (status.playing) {
